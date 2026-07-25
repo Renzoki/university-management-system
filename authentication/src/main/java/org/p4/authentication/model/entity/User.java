@@ -11,7 +11,8 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    We're seeding our database for now, so we don't need this line
+//    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id",  nullable = false, updatable = false)
     private UUID id;
 

@@ -38,7 +38,7 @@ public class CourseController {
         );
     }
 
-    @GetMapping("/{oldCourseCode}")
+    @GetMapping("/code/{courseCode}")
     public ResponseEntity<CourseDTO> getCourseByCode(
             @PathVariable
             @NotBlank(message = "Course code is required!")

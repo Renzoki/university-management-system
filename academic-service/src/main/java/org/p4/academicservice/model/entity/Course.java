@@ -23,9 +23,6 @@ public class Course extends BaseEntity {
     @Column(name = "course_status", nullable = false)
     private CourseStatus status;
 
-    @Column(name = "faculty_id")
-    private UUID facultyId;
-
     @OneToMany(
             mappedBy = "course",
             cascade = CascadeType.ALL,
@@ -37,13 +34,6 @@ public class Course extends BaseEntity {
     public Course(String courseName, String courseCode) {
         this.courseName = courseName;
         this.courseCode = courseCode;
-        this.status = CourseStatus.OFFERED;
-    }
-
-    public Course(String courseName, String courseCode, UUID facultyId) {
-        this.courseName = courseName;
-        this.courseCode = courseCode;
-        this.facultyId = facultyId;
         this.status = CourseStatus.OFFERED;
     }
 
@@ -69,14 +59,6 @@ public class Course extends BaseEntity {
 
     public void setStatus(CourseStatus status) {
         this.status = status;
-    }
-
-    public UUID getFacultyId() {
-        return facultyId;
-    }
-
-    public void setFacultyId(UUID facultyId) {
-        this.facultyId = facultyId;
     }
 
     public List<Enrollment> getEnrollmentList() {
@@ -109,7 +91,6 @@ public class Course extends BaseEntity {
                 " courseName='" + courseName + '\'' +
                 ", oldCourseCode='" + courseCode + '\'' +
                 ", courseStatus='" + status + '\'' +
-                ", facultyId=" + facultyId +
                 '}';
     }
 }

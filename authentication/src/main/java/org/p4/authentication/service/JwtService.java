@@ -1,5 +1,6 @@
 package org.p4.authentication.service;
 
+import org.p4.authentication.model.entity.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Jwts;
@@ -26,11 +27,13 @@ public class JwtService {
         UUID sub = user.getId();
         UserRole role = user.getRole();
         String email = user.getEmail();
+        UserStatus status = user.getStatus();
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(sub.toString())
                 .claim("role", role.name())
                 .claim("email", email)
+                .claim("status", email)
                 .issuedAt(
                         Date.from(now)
                 )

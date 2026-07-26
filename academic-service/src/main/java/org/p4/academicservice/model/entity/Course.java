@@ -37,12 +37,14 @@ public class Course extends BaseEntity {
     public Course(String courseName, String courseCode) {
         this.courseName = courseName;
         this.courseCode = courseCode;
+        this.status = CourseStatus.OFFERED;
     }
 
     public Course(String courseName, String courseCode, UUID facultyId) {
         this.courseName = courseName;
         this.courseCode = courseCode;
         this.facultyId = facultyId;
+        this.status = CourseStatus.OFFERED;
     }
 
     public String getCourseName() {
@@ -77,6 +79,14 @@ public class Course extends BaseEntity {
         this.facultyId = facultyId;
     }
 
+    public List<Enrollment> getEnrollmentList() {
+        return enrollmentList;
+    }
+
+    public void setEnrollmentList(List<Enrollment> enrollmentList) {
+        this.enrollmentList = enrollmentList;
+    }
+
     public void addEnrollment(Enrollment enrollment){
         if(enrollment == null)
             return;
@@ -97,7 +107,7 @@ public class Course extends BaseEntity {
     public String toString() {
         return "Course{" +
                 " courseName='" + courseName + '\'' +
-                ", courseCode='" + courseCode + '\'' +
+                ", oldCourseCode='" + courseCode + '\'' +
                 ", courseStatus='" + status + '\'' +
                 ", facultyId=" + facultyId +
                 '}';

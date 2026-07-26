@@ -2,6 +2,7 @@ package org.p4.academicservice.model.entity;
 
 import jakarta.persistence.*;
 import org.p4.academicservice.model.entity.base.BaseEntity;
+import org.p4.academicservice.model.entity.enums.EnrollmentStatus;
 
 @Entity
 @Table(name = "enrollment")
@@ -17,6 +18,9 @@ public class Enrollment extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Grade grade;
+
+    @Enumerated(EnumType.STRING)
+    EnrollmentStatus status;
 
     public Enrollment() {}
 

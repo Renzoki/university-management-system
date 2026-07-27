@@ -58,7 +58,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course updateCourseById(UUID id, UpdateCourseRequest request) {
+    public Course updateCourse(UUID id, UpdateCourseRequest request) {
         Course updatedCourse = courseRepository
                 .findById(id)
                 .orElseThrow(() -> new CourseNotFoundException(id));

@@ -12,6 +12,6 @@ public interface CourseService {
     Course getCourseByCode(String code);
     List<Course> getAllCourses();
     Course addCourse(NewCourseRequest request);
-    Course updateCourseById(UUID id, UpdateCourseRequest request);
+    Course updateCourse(UUID id, UpdateCourseRequest request);
     void deleteCourseById(UUID id);
 }

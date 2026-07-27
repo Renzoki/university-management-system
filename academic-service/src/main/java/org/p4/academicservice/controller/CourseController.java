@@ -72,20 +72,19 @@ public class CourseController {
                 .body(response);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable UUID id,
                                                   @Valid @RequestBody UpdateCourseRequest request){
-        Course course = courseService.updateCourseById(id, request);
+        Course course = courseService.updateCourse(id, request);
         CourseDTO response = courseMapper.toDto(course);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable UUID id){
         courseService.deleteCourseById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

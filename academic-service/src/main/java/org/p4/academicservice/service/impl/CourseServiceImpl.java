@@ -6,6 +6,8 @@ import org.p4.academicservice.exception.CourseNotFoundException;
 import org.p4.academicservice.model.dto.request.NewCourseRequest;
 import org.p4.academicservice.model.dto.request.UpdateCourseRequest;
 import org.p4.academicservice.model.entity.Course;
+import org.p4.academicservice.model.entity.Enrollment;
+import org.p4.academicservice.model.entity.Student;
 import org.p4.academicservice.model.entity.enums.CourseStatus;
 import org.p4.academicservice.model.entity.enums.EnrollmentStatus;
 import org.p4.academicservice.repository.CourseRepository;
@@ -44,6 +46,22 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findAll()
                 .stream()
                 .filter(course -> course.getStatus() == CourseStatus.OFFERED)
+                .toList();
+    }
+
+    @Override
+    public List<Student> getAllStudentsByCourseId(UUID courseId) {
+        return enrollmentRepository.findByCourseId(courseId)
+            .stream()
+            .map(Enrollment::getStudent)
+            .toList();
+    }
+
+    @Override
+    public List<Student> getAllStudentsByCourseCode(String courseCode) {
+        return enrollmentRepository.findByCourseCode(courseCode)
+                .stream()
+                .map(Enrollment::getStudent)
                 .toList();
     }
 

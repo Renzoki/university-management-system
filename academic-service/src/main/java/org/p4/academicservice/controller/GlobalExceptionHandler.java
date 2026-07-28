@@ -2,9 +2,7 @@ package org.p4.academicservice.controller;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.p4.academicservice.exception.CourseAlreadyExistsException;
-import org.p4.academicservice.exception.CourseDeletionNotAllowedException;
-import org.p4.academicservice.exception.CourseNotFoundException;
+import org.p4.academicservice.exception.*;
 import org.p4.academicservice.model.dto.response.ErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +23,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ResponseEntity<ErrorDTO> handleStudentNotFound(StudentNotFoundException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(CourseAlreadyExistsException.class)
     public ResponseEntity<ErrorDTO> handleCourseAlreadyExists(CourseAlreadyExistsException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(StudentEmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorDTO> handleStudentEmailAlreadyExists(StudentEmailAlreadyExistsException ex){
         String message = ex.getMessage();
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
     }

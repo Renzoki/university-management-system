@@ -23,6 +23,7 @@ public class Student extends Person {
     public Student() {}
 
     public Student(String firstName, String lastName, String email) {
+        this.status = StudentStatus.NOT_ENROLLED;
         super(firstName, lastName, email);
     }
 

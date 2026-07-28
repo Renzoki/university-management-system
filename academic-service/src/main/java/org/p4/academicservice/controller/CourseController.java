@@ -3,11 +3,13 @@ package org.p4.academicservice.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.p4.academicservice.mapper.CourseMapper;
+import org.p4.academicservice.mapper.ResponseMapper;
 import org.p4.academicservice.model.dto.request.NewCourseRequest;
 import org.p4.academicservice.model.dto.request.UpdateCourseRequest;
 import org.p4.academicservice.model.dto.response.CourseDTO;
+import org.p4.academicservice.model.dto.response.StudentDTO;
 import org.p4.academicservice.model.entity.Course;
+import org.p4.academicservice.model.entity.Student;
 import org.p4.academicservice.service.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,17 +24,17 @@ import java.util.UUID;
 @Validated
 public class CourseController {
     private final CourseService courseService;
-    private final CourseMapper courseMapper;
+    private final ResponseMapper mapper;
 
-    public CourseController(CourseService courseService, CourseMapper courseMapper){
+    public CourseController(CourseService courseService, ResponseMapper mapper){
         this.courseService = courseService;
-        this.courseMapper = courseMapper;
+        this.mapper = mapper;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDTO> getCourseById(@PathVariable UUID id){
         return ResponseEntity.ok(
-                courseMapper.toDto(
+                mapper.toDto(
                         courseService.getCourseById(id)
                 )
         );
@@ -47,7 +49,7 @@ public class CourseController {
             String courseCode)
     {
         return ResponseEntity.ok(
-                courseMapper.toDto(
+                mapper.toDto(
                         courseService.getCourseByCode(courseCode)
                 )
         );
@@ -58,15 +60,33 @@ public class CourseController {
         return ResponseEntity.ok(
                 courseService.getAllCourses()
                 .stream()
-                .map(courseMapper::toDto)
+                .map(mapper::toDto)
                 .toList()
+        );
+    }
+
+    @GetMapping("/{courseId}/students")
+    public ResponseEntity<List<StudentDTO>> getStudentsByCourseId(@PathVariable UUID courseId){
+        List<Student> students = courseService.getAllStudentsByCourseId(courseId);
+        return ResponseEntity.ok(
+                students.stream().map(mapper::toDto)
+                        .toList()
+        );
+    }
+
+    @GetMapping("/code/{courseCode}/students")
+    public ResponseEntity<List<StudentDTO>> getStudentsByCourseCode(@PathVariable String courseCode){
+        List<Student> students = courseService.getAllStudentsByCourseCode(courseCode);
+        return ResponseEntity.ok(
+                students.stream().map(mapper::toDto)
+                        .toList()
         );
     }
 
     @PostMapping
     public ResponseEntity<CourseDTO> addNewCourse(@Valid @RequestBody NewCourseRequest request){
         Course course = courseService.addCourse(request);
-        CourseDTO response =  courseMapper.toDto(course);
+        CourseDTO response =  mapper.toDto(course);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
@@ -76,7 +96,7 @@ public class CourseController {
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable UUID id,
                                                   @Valid @RequestBody UpdateCourseRequest request){
         Course course = courseService.updateCourse(id, request);
-        CourseDTO response = courseMapper.toDto(course);
+        CourseDTO response = mapper.toDto(course);
 
         return ResponseEntity.ok(response);
     }

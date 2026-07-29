@@ -59,7 +59,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Student> getAllStudentsByCourseCode(String courseCode) {
-        return enrollmentRepository.findByCourseCode(courseCode)
+        return enrollmentRepository.findByCourse_CourseCode(courseCode)
                 .stream()
                 .map(Enrollment::getStudent)
                 .toList();

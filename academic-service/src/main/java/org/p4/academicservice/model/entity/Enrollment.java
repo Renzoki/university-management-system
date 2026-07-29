@@ -47,4 +47,12 @@ public class Enrollment extends BaseEntity {
     public void setGrade(Grade grade) {
         this.grade = grade;
     }
+
+    public EnrollmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EnrollmentStatus status) {
+        this.status = status;
+    }
 }

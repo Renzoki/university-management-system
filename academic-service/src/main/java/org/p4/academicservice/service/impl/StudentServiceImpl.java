@@ -16,8 +16,8 @@ import java.util.UUID;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-    private StudentRepository studentRepository;
-    private EnrollmentRepository enrollmentRepository;
+    private final StudentRepository studentRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     public StudentServiceImpl(StudentRepository studentRepository, EnrollmentRepository enrollmentRepository){
         this.studentRepository = studentRepository;

@@ -9,7 +9,6 @@ import java.util.UUID;
 @MappedSuperclass
 public class Person {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
@@ -33,6 +32,10 @@ public class Person {
 
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getFirstName() {

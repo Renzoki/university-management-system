@@ -36,17 +36,13 @@ public class SeedConfiguration {
         admin.setLastName("Tabuzo");
         admin.setEmail("admin@example.com");
         admin.setPasswordHash(passwordEncoder.encode("admin123"));
-        admin.setRole(UserRole.STUDENT);
+        admin.setRole(UserRole.ADMIN);
         admin.setStatus(UserStatus.ACTIVE);
         admin.setCreatedAt(Instant.now());
         userRepository.save(admin);
     }
 
     public static void seedStudents(UserRepository userRepository, PasswordEncoder passwordEncoder){
-        if (userRepository.findByEmail("admin@example.com").isPresent()) {
-            return;
-        }
-
         User student2 = new User();
         student2.setId(UUID.fromString("22222222-2222-2222-2222-222222222222"));
         student2.setFirstName("Cody");

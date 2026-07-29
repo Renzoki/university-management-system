@@ -33,7 +33,7 @@ public class JwtService {
                 .subject(sub.toString())
                 .claim("role", role.name())
                 .claim("email", email)
-                .claim("status", email)
+                .claim("status", status)
                 .issuedAt(
                         Date.from(now)
                 )

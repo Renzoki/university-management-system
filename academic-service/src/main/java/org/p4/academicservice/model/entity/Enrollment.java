@@ -24,6 +24,12 @@ public class Enrollment extends BaseEntity {
 
     public Enrollment() {}
 
+    public Enrollment(Student student, Course course){
+        this.student = student;
+        this.course = course;
+        this.status = EnrollmentStatus.ACTIVE;
+    }
+
     public Course getCourse() {
         return course;
     }

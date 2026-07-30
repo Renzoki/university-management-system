@@ -35,6 +35,14 @@ public class Student extends Person {
         this.status = status;
     }
 
+    public List<Enrollment> getEnrollmentList() {
+        return enrollmentList;
+    }
+
+    public void setEnrollmentList(List<Enrollment> enrollmentList) {
+        this.enrollmentList = enrollmentList;
+    }
+
     public void addEnrollment(Enrollment enrollment){
         if(enrollment == null)
             return;

@@ -29,6 +29,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(EnrollmentNotFoundException.class)
+    public ResponseEntity<ErrorDTO> handleEnrollmentNotFound(EnrollmentNotFoundException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(CourseAlreadyExistsException.class)
     public ResponseEntity<ErrorDTO> handleCourseAlreadyExists(CourseAlreadyExistsException ex){
         String message = ex.getMessage();
@@ -41,8 +47,33 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(EnrollmentAlreadyCompletedException.class)
+    public ResponseEntity<ErrorDTO> handleEnrollmentAlreadyCompleted(EnrollmentAlreadyCompletedException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
+    }
+
+
     @ExceptionHandler(CourseDeletionNotAllowedException.class)
     public ResponseEntity<ErrorDTO> handleInvalidCourseDeletion(CourseDeletionNotAllowedException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(StudentNotEnrolledException.class)
+    public ResponseEntity<ErrorDTO> handleUnenrolledStudentTryingToEnroll(StudentNotEnrolledException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(EnrollmentStillActiveException.class)
+    public ResponseEntity<ErrorDTO> handleInvalidEnrollmentDeletion(EnrollmentStillActiveException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CourseNotOfferedException.class)
+    public ResponseEntity<ErrorDTO> handleTryingToEnrollInUnofferedCourse(CourseNotOfferedException ex){
         String message = ex.getMessage();
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
     }

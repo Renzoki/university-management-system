@@ -3,16 +3,20 @@ package org.p4.academicservice.service.impl;
 import org.p4.academicservice.exception.CourseAlreadyExistsException;
 import org.p4.academicservice.exception.CourseDeletionNotAllowedException;
 import org.p4.academicservice.exception.CourseNotFoundException;
+import org.p4.academicservice.exception.FacultyNotFoundException;
 import org.p4.academicservice.model.dto.request.NewCourseRequest;
 import org.p4.academicservice.model.dto.request.UpdateCourseRequest;
 import org.p4.academicservice.model.entity.Course;
 import org.p4.academicservice.model.entity.Enrollment;
+import org.p4.academicservice.model.entity.Faculty;
 import org.p4.academicservice.model.entity.Student;
 import org.p4.academicservice.model.entity.enums.CourseStatus;
 import org.p4.academicservice.model.entity.enums.EnrollmentStatus;
 import org.p4.academicservice.repository.CourseRepository;
 import org.p4.academicservice.repository.EnrollmentRepository;
+import org.p4.academicservice.repository.FacultyRepository;
 import org.p4.academicservice.service.CourseService;
+import org.springframework.data.web.config.OffsetScrollPositionHandlerMethodArgumentResolverCustomizer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,10 +27,15 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final FacultyRepository facultyRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository){
+    public CourseServiceImpl(CourseRepository courseRepository,
+                             EnrollmentRepository enrollmentRepository,
+                             FacultyRepository facultyRespository
+    ){
         this.courseRepository = courseRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.facultyRepository = facultyRespository;
     }
 
     @Override
@@ -95,6 +104,19 @@ public class CourseServiceImpl implements CourseService {
 
         return courseRepository.save(updatedCourse);
     }
+
+    @Override
+    public Course assignFacultyToCourse(UUID courseId, UUID facultyId) {
+        Faculty faculty = facultyRepository.findById(facultyId)
+                .orElseThrow(() -> new FacultyNotFoundException(facultyId));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException(courseId));
+
+        course.assignFaculty(faculty);
+        return courseRepository.save(course);
+    }
+
 
     @Override
     public void deleteCourseById(UUID id) {

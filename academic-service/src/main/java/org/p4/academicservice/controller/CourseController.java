@@ -75,7 +75,12 @@ public class CourseController {
     }
 
     @GetMapping("/code/{courseCode}/students")
-    public ResponseEntity<List<StudentDTO>> getStudentsByCourseCode(@PathVariable String courseCode){
+    public ResponseEntity<List<StudentDTO>> getStudentsByCourseCode(
+            @PathVariable
+            @NotBlank(message = "Course code is required!")
+            @Size(min = 7, max = 7, message = "Course code must be exactly 7 characters!")
+            String courseCode
+    ){
         List<Student> students = courseService.getAllStudentsByCourseCode(courseCode);
         return ResponseEntity.ok(
                 students.stream().map(mapper::toDto)
@@ -96,6 +101,15 @@ public class CourseController {
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable UUID id,
                                                   @Valid @RequestBody UpdateCourseRequest request){
         Course course = courseService.updateCourse(id, request);
+        CourseDTO response = mapper.toDto(course);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{courseId}/faculty/{facultyId}")
+    public ResponseEntity<CourseDTO> assignFacultyToCourse(@PathVariable UUID courseId,
+                                                           @PathVariable UUID facultyId){
+        Course course = courseService.assignFacultyToCourse(courseId, facultyId);
         CourseDTO response = mapper.toDto(course);
 
         return ResponseEntity.ok(response);

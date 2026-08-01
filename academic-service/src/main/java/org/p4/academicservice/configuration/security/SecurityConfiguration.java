@@ -46,7 +46,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.DELETE, "/students/{id}").hasRole("ADMIN")
 
                 //LASTLY
-                .anyRequest().denyAll()
+                .anyRequest().permitAll()
         );
 
         http.addFilterBefore(

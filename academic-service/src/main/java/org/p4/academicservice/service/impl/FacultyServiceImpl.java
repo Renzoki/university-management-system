@@ -15,6 +15,7 @@ import java.util.UUID;
 @Service
 public class FacultyServiceImpl implements FacultyService {
     private final FacultyRepository facultyRepository;
+    private final CourseRepository courseRepository;
 
     public FacultyServiceImpl(FacultyRepository facultyRepository, CourseRepository courseRepository){
         this.facultyRepository = facultyRepository;

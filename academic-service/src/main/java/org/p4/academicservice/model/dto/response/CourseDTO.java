@@ -8,6 +8,7 @@ public record CourseDTO(
         UUID id,
         String name,
         String courseCode,
-        CourseStatus status
+        CourseStatus status,
+        FacultyDTO faculty
 ) {
 }

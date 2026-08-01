@@ -35,6 +35,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FacultyNotFoundException.class)
+    public ResponseEntity<ErrorDTO> handleFacutyNotFound(FacultyNotFoundException ex){
+        String message = ex.getMessage();
+        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(CourseAlreadyExistsException.class)
     public ResponseEntity<ErrorDTO> handleCourseAlreadyExists(CourseAlreadyExistsException ex){
         String message = ex.getMessage();

@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Size;
 import org.p4.academicservice.model.entity.base.BaseEntity;
 import org.p4.academicservice.model.entity.enums.CourseStatus;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "course")
@@ -27,7 +27,11 @@ public class Course extends BaseEntity {
             mappedBy = "course",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<Enrollment> enrollmentList;
+    private List<Enrollment> enrollmentList = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "faculty_id")
+    private Faculty faculty;
 
     public Course() {}
 
@@ -61,6 +65,14 @@ public class Course extends BaseEntity {
         this.status = status;
     }
 
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
     public List<Enrollment> getEnrollmentList() {
         return enrollmentList;
     }
@@ -83,6 +95,19 @@ public class Course extends BaseEntity {
 
         enrollmentList.remove(enrollment);
         enrollment.setCourse(null);
+    }
+
+    public void assignFaculty(Faculty faculty){
+        if (faculty == null || this.faculty == faculty) {
+            return;
+        }
+
+        if (this.faculty != null) {
+            this.faculty.removeCourse(this);
+        }
+
+        this.setFaculty(faculty);
+        faculty.addCourse(this);
     }
 
     @Override

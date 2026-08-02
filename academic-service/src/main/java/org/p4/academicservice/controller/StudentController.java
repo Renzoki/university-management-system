@@ -1,6 +1,7 @@
 package org.p4.academicservice.controller;
 
 import jakarta.validation.Valid;
+import org.p4.academicservice.configuration.security.AuthenticatedUser;
 import org.p4.academicservice.mapper.ResponseMapper;
 import org.p4.academicservice.model.dto.request.NewStudentRequest;
 import org.p4.academicservice.model.dto.request.UpdateStudentRequest;
@@ -9,6 +10,7 @@ import org.p4.academicservice.model.entity.Student;
 import org.p4.academicservice.service.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +27,17 @@ public class StudentController {
         this.mapper = mapper;
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<StudentDTO> getStudentById(@PathVariable UUID id){
+    @GetMapping("/self")
+    public ResponseEntity<StudentDTO> getCurrentStudent(
+            @AuthenticationPrincipal AuthenticatedUser authStudent){
+        Student student = studentService.getStudentById(authStudent.id());
+        return ResponseEntity.ok(mapper.toDto(student));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StudentDTO> getStudentById(
+            @PathVariable UUID id
+    ){
         Student student = studentService.getStudentById(id);
         return ResponseEntity.ok(mapper.toDto(student));
     }
@@ -41,7 +52,9 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentDTO> addStudent(@Valid @RequestBody NewStudentRequest request){
+    public ResponseEntity<StudentDTO> addStudent(
+            @Valid @RequestBody NewStudentRequest request
+    ){
         Student student = studentService.addStudent(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -49,14 +62,18 @@ public class StudentController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<StudentDTO> updateStudent(@PathVariable UUID id,
-                                                    @Valid @RequestBody UpdateStudentRequest request){
+    public ResponseEntity<StudentDTO> updateStudent(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateStudentRequest request
+    ){
         Student student = studentService.updateStudent(id, request);
         return ResponseEntity.ok(mapper.toDto(student));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable UUID id){
+    public ResponseEntity<Void> deleteStudent(
+            @PathVariable UUID id
+    ){
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }

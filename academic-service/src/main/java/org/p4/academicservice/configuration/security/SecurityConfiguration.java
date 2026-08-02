@@ -40,7 +40,8 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.DELETE, "/courses/{id}").hasRole("ADMIN")
 
                 // ====== STUDENTS ======
-                .requestMatchers(HttpMethod.GET, "/students/{id}").authenticated()
+                .requestMatchers(HttpMethod.GET, "/students/self").authenticated()
+                .requestMatchers(HttpMethod.GET, "/students/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/students").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/students").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/students/{id}").hasRole("ADMIN")

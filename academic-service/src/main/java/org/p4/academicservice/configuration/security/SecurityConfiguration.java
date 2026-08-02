@@ -60,6 +60,13 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/enrollments/{studentId}/{courseId}").hasAnyRole("ADMIN", "FACULTY", "STUDENT")
                 .requestMatchers(HttpMethod.PATCH, "/enrollments/{enrollmentId}").hasAnyRole("STUDENT", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/enrollments/{enrollmentId}").hasRole("ADMIN")
+
+                // ====== GRADING ======
+                .requestMatchers(HttpMethod.GET, "/grades/self/{courseId}").hasRole("STUDENT")
+                .requestMatchers(HttpMethod.GET, "/grades/{studentId}/{courseId}").hasAnyRole("ADMIN", "FACULTY")
+                .requestMatchers(HttpMethod.PUT, "/grades/{enrollmentId}").hasAnyRole("ADMIN, ", "FACULTY")
+
+                .anyRequest().denyAll()
         );
 
         http.addFilterBefore(

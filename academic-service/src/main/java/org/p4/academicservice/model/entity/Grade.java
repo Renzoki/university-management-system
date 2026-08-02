@@ -15,15 +15,16 @@ public class Grade extends BaseEntity {
     @Column(name = "grade_equivalent")
     private double gradeEquivalent;
 
-    @OneToOne(mappedBy = "grade", optional = false)
+    @OneToOne(optional = false)
     @JoinColumn(name = "enrollment_id")
     private Enrollment enrollment;
 
     public Grade() {}
 
-    public Grade(double rawGrade, double gradeEquivalent){
+    public Grade(double rawGrade, Enrollment enrollment){
         this.rawGrade = rawGrade;
-        this.gradeEquivalent = gradeEquivalent;
+        this.enrollment = enrollment;
+        setEnrollment(enrollment);
     }
 
     public double getGradeEquivalent() {
@@ -48,6 +49,9 @@ public class Grade extends BaseEntity {
 
     public void setEnrollment(Enrollment enrollment) {
         this.enrollment = enrollment;
+        if (enrollment != null && enrollment.getGrade() != this) {
+            enrollment.setGrade(this);
+        }
     }
 
     @Override

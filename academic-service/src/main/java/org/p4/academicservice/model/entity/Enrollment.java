@@ -16,7 +16,7 @@ public class Enrollment extends BaseEntity {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "enrollment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Grade grade;
 
     @Enumerated(EnumType.STRING)

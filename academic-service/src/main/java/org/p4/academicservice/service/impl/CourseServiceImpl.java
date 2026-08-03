@@ -62,7 +62,7 @@ public class CourseServiceImpl implements CourseService {
 
         if(role == UserRole.FACULTY){
             if(course.getFaculty() == null){
-                throw FacultyNotFoundException.courseHasNoFaculty(courseId);
+                throw new FacultyNotFoundException(courseId);
             }
             if(!course.getFaculty().getId().equals(employeeId)) {
                 throw new FacultyNotAssignedToCourseException(employeeId, course.getCourseCode());
@@ -82,7 +82,7 @@ public class CourseServiceImpl implements CourseService {
 
         if(role == UserRole.FACULTY){
             if(course.getFaculty() == null){
-                throw FacultyNotFoundException.courseHasNoFaculty(course.getId());
+                throw new CourseHasNoFacultyAssignedException(course.getId());
             }
             if(!course.getFaculty().getId().equals(employeeId)) {
                 throw new FacultyNotAssignedToCourseException(employeeId, course.getCourseCode());
@@ -134,7 +134,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course assignFacultyToCourse(UUID courseId, UUID facultyId) {
         Faculty faculty = facultyRepository.findById(facultyId)
-                .orElseThrow(() -> FacultyNotFoundException.facultyNotFound(facultyId));
+                .orElseThrow(() -> new FacultyNotFoundException(facultyId));
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException(courseId));

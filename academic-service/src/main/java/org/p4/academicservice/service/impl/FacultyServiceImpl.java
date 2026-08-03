@@ -1,6 +1,6 @@
 package org.p4.academicservice.service.impl;
 
-import org.p4.academicservice.exception.FacultyNotFoundException;
+import org.p4.academicservice.exception.ResourceNotFoundException;
 import org.p4.academicservice.model.dto.request.NewFacultyRequest;
 import org.p4.academicservice.model.dto.request.UpdateFacultyRequest;
 import org.p4.academicservice.model.entity.Faculty;
@@ -25,7 +25,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public Faculty getFacultyById(UUID id) {
         return facultyRepository.findById(id)
-                .orElseThrow(() -> new FacultyNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty", "id", id));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public Faculty updateFaculty(UUID id, UpdateFacultyRequest request) {
         Faculty updatedFaculty = facultyRepository.findById(id)
-                .orElseThrow(() -> new FacultyNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty", "id", id));
 
         if(request.firstName() != null){
             updatedFaculty.setFirstName(request.firstName());
@@ -66,7 +66,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public void deleteFaculty(UUID id) {
         Faculty faculty = facultyRepository.findById(id)
-                .orElseThrow(() -> new FacultyNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty", "id", id));
 
         facultyRepository.delete(faculty);
     }

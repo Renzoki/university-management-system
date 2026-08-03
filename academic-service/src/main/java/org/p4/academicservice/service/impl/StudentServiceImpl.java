@@ -1,7 +1,7 @@
 package org.p4.academicservice.service.impl;
 
+import org.p4.academicservice.exception.ResourceNotFoundException;
 import org.p4.academicservice.exception.StudentEmailAlreadyExistsException;
-import org.p4.academicservice.exception.StudentNotFoundException;
 import org.p4.academicservice.model.dto.request.NewStudentRequest;
 import org.p4.academicservice.model.dto.request.UpdateStudentRequest;
 import org.p4.academicservice.model.entity.Enrollment;
@@ -27,7 +27,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student getStudentById(UUID id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student", "id", id));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student updateStudent(UUID id, UpdateStudentRequest request) {
         Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student", "id", id));
 
         if(request.firstName() != null){
             student.setFirstName(request.firstName());
@@ -81,7 +81,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(UUID id) {
         Student student = studentRepository.findById(id)
-                        .orElseThrow(() -> new StudentNotFoundException(id));
+                        .orElseThrow(() -> new ResourceNotFoundException("Student", "id", id));
 
         studentRepository.delete(student);
     }

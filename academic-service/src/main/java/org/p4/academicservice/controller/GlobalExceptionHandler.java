@@ -17,32 +17,14 @@ import tools.jackson.databind.exc.InvalidFormatException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CourseNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleCourseNotFound(CourseNotFoundException ex){
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorDTO> handleResourceNotFound(ResourceNotFoundException ex){
         String message = ex.getMessage();
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(StudentNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleStudentNotFound(StudentNotFoundException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(EnrollmentNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleEnrollmentNotFound(EnrollmentNotFoundException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(GradeNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleGradeNotFound(GradeNotFoundException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(FacultyNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleFacutyNotFound(FacultyNotFoundException ex){
+    @ExceptionHandler(StudentNotEnrolledInCourseException.class)
+    public ResponseEntity<ErrorDTO> handleStudentNotEnrolledInCourse(StudentNotEnrolledInCourseException ex){
         String message = ex.getMessage();
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
     }

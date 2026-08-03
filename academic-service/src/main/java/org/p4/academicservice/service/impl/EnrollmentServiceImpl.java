@@ -36,7 +36,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public List<Enrollment> getStudentEnrollments(UUID studentId) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new StudentNotFoundException(studentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Student", "id", studentId));
 
         return student.getEnrollmentList();
     }
@@ -44,7 +44,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public List<Enrollment> getCourseEnrollments(UUID employeeId, UUID courseId, UserRole role) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException(courseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
 
         if(role == UserRole.FACULTY && !employeeId.equals(course.getFaculty().getId())){
             throw new FacultyNotAssignedToCourseException(employeeId, course.getCourseCode());
@@ -55,10 +55,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public Enrollment addNewEnrollment(UUID studentId, UUID courseId) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new StudentNotFoundException(studentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Student", "id", studentId));
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException(courseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
 
         if(course.getStatus() != CourseStatus.OFFERED){
             throw new CourseNotOfferedException(courseId);
@@ -86,7 +86,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public void dropEnrollment(UUID studentId, UUID enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findByIdAndStudentId(enrollmentId, studentId)
-                .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", enrollmentId));
 
         if(enrollment.getStatus() == EnrollmentStatus.COMPLETED){
             throw new EnrollmentAlreadyCompletedException(enrollmentId);
@@ -103,7 +103,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public void deleteEnrollment(UUID enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+                .orElseThrow(() -> new  ResourceNotFoundException("Enrollment", "id", enrollmentId));
 
         if(enrollment.getStatus() == EnrollmentStatus.COMPLETED){
             throw new EnrollmentAlreadyCompletedException(enrollmentId);

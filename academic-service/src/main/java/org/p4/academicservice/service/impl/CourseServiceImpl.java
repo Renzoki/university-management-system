@@ -38,13 +38,13 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course getCourseById(UUID id) {
         return courseRepository.findById(id)
-                .orElseThrow(() -> new CourseNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", id));
     }
 
     @Override
     public Course getCourseByCode(String code) {
         return courseRepository.findByCourseCode(code)
-                .orElseThrow(() -> new CourseNotFoundException(code));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "course code", code));
     }
 
     @Override
@@ -58,11 +58,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Student> getAllStudentsByCourseId(UUID employeeId, UserRole role, UUID courseId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException(courseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
 
         if(role == UserRole.FACULTY){
             if(course.getFaculty() == null){
-                throw new FacultyNotFoundException(courseId);
+                throw new ResourceNotFoundException("Faculty", "id", employeeId);
             }
             if(!course.getFaculty().getId().equals(employeeId)) {
                 throw new FacultyNotAssignedToCourseException(employeeId, course.getCourseCode());
@@ -78,7 +78,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Student> getAllStudentsByCourseCode(UUID employeeId, UserRole role, String courseCode) {
         Course course = courseRepository.findByCourseCode(courseCode)
-                .orElseThrow(() -> new CourseNotFoundException(courseCode));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "course code", courseCode));
 
         if(role == UserRole.FACULTY){
             if(course.getFaculty() == null){
@@ -109,7 +109,7 @@ public class CourseServiceImpl implements CourseService {
     public Course updateCourse(UUID id, UpdateCourseRequest request) {
         Course updatedCourse = courseRepository
                 .findById(id)
-                .orElseThrow(() -> new CourseNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", id));
 
         if(request.courseName() != null){
             updatedCourse.setCourseName(request.courseName());
@@ -134,10 +134,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course assignFacultyToCourse(UUID courseId, UUID facultyId) {
         Faculty faculty = facultyRepository.findById(facultyId)
-                .orElseThrow(() -> new FacultyNotFoundException(facultyId));
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty", "id", facultyId));
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException(courseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
 
         course.assignFaculty(faculty);
         return courseRepository.save(course);
@@ -148,7 +148,7 @@ public class CourseServiceImpl implements CourseService {
     public void deleteCourseById(UUID id) {
         Course course = courseRepository
                 .findById(id)
-                .orElseThrow(() -> new CourseNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", id));
 
         if(course.getStatus() != CourseStatus.ARCHIVED){
             throw new CourseDeletionNotAllowedException(course.getCourseCode(), course.getStatus());

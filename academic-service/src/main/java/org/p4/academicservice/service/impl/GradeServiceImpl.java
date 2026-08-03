@@ -48,7 +48,7 @@ public class GradeServiceImpl implements GradeService {
     @Override
     public Grade setGrade(UUID employeeId, UUID enrollmentId, UserRole role, SetGradeRequest request) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+                .orElseThrow(() -> new  ResourceNotFoundException("Enrollment", "id", enrollmentId));
 
         validateSystemStates(enrollment);
         validateFacultyAssignment(employeeId, enrollment, role);
@@ -68,13 +68,13 @@ public class GradeServiceImpl implements GradeService {
 
     private Enrollment fetchAndValidateEnrollment(UUID studentId, UUID courseId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException(courseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
 
         Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId)
-                .orElseThrow(() -> new EnrollmentNotFoundException(studentId, course.getCourseCode()));
+                .orElseThrow(() -> new StudentNotEnrolledInCourseException(studentId, course.getCourseCode()));
 
         if (enrollment.getGrade() == null) {
-            throw new GradeNotFoundException(enrollment.getId());
+            throw new ResourceNotFoundException("Grade", "enrollmentId", enrollment.getId());
         }
 
         return enrollment;

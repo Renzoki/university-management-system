@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface CourseRepository extends JpaRepository<Course, UUID> {
     Optional<Course> findByCourseCode(String courseCode);
-    Boolean existsByCourseCode(String courseCode);
+    boolean existsByIdAndFacultyId(UUID courseId, UUID facultyId);
+    boolean existsByCourseCode(String courseCode);
 }

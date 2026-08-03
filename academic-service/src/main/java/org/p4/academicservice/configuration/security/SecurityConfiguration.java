@@ -30,14 +30,14 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(auth -> auth
                 // ====== COURSES ======
                 .requestMatchers(HttpMethod.GET, "/courses").authenticated()
-                .requestMatchers(HttpMethod.GET, "/courses/{id}").authenticated()
+                .requestMatchers(HttpMethod.GET, "/courses/{courseId}").authenticated()
                 .requestMatchers(HttpMethod.GET, "/courses/code/{courseCode}").authenticated()
                 .requestMatchers(HttpMethod.GET, "/courses/{courseId}/students").hasAnyRole("ADMIN", "FACULTY")
                 .requestMatchers(HttpMethod.GET, "/courses/code/{courseCode}/students").hasAnyRole("ADMIN", "FACULTY")
                 .requestMatchers(HttpMethod.POST, "/courses").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/courses/{id}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/courses/{courseId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/courses/{courseId}/faculty/{facultyId}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/courses/{id}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/courses/{courseId}").hasRole("ADMIN")
 
                 // ====== STUDENTS ====== (DONE)
                 .requestMatchers(HttpMethod.GET, "/students/self").authenticated()
@@ -55,7 +55,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.PUT, "/faculty/{facultyId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/faculty/{facultyId}").hasRole("ADMIN")
 
-                // ====== ENROLLMENTS ======
+                // ====== ENROLLMENTS ====== (DONE)
                 .requestMatchers(HttpMethod.GET, "/enrollments/student/self").hasRole("STUDENT")
                 .requestMatchers(HttpMethod.GET, "/enrollments/students/{studentId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/enrollments/courses/{courseId}").hasAnyRole("ADMIN", "FACULTY")

@@ -1,9 +1,6 @@
 package org.p4.academicservice.service.impl;
 
-import org.p4.academicservice.exception.CourseAlreadyExistsException;
-import org.p4.academicservice.exception.CourseDeletionNotAllowedException;
-import org.p4.academicservice.exception.CourseNotFoundException;
-import org.p4.academicservice.exception.FacultyNotFoundException;
+import org.p4.academicservice.exception.*;
 import org.p4.academicservice.model.dto.request.NewCourseRequest;
 import org.p4.academicservice.model.dto.request.UpdateCourseRequest;
 import org.p4.academicservice.model.entity.Course;
@@ -12,11 +9,11 @@ import org.p4.academicservice.model.entity.Faculty;
 import org.p4.academicservice.model.entity.Student;
 import org.p4.academicservice.model.entity.enums.CourseStatus;
 import org.p4.academicservice.model.entity.enums.EnrollmentStatus;
+import org.p4.academicservice.model.entity.enums.UserRole;
 import org.p4.academicservice.repository.CourseRepository;
 import org.p4.academicservice.repository.EnrollmentRepository;
 import org.p4.academicservice.repository.FacultyRepository;
 import org.p4.academicservice.service.CourseService;
-import org.springframework.data.web.config.OffsetScrollPositionHandlerMethodArgumentResolverCustomizer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,15 +56,39 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Student> getAllStudentsByCourseId(UUID courseId) {
+    public List<Student> getAllStudentsByCourseId(UUID employeeId, UserRole role, UUID courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException(courseId));
+
+        if(role == UserRole.FACULTY){
+            if(course.getFaculty() == null){
+                throw FacultyNotFoundException.courseHasNoFaculty(courseId);
+            }
+            if(!course.getFaculty().getId().equals(employeeId)) {
+                throw new FacultyNotAssignedToCourseException(employeeId, course.getCourseCode());
+            }
+        }
+
         return enrollmentRepository.findByCourseId(courseId)
-            .stream()
-            .map(Enrollment::getStudent)
-            .toList();
+                .stream()
+                .map(Enrollment::getStudent)
+                .toList();
     }
 
     @Override
-    public List<Student> getAllStudentsByCourseCode(String courseCode) {
+    public List<Student> getAllStudentsByCourseCode(UUID employeeId, UserRole role, String courseCode) {
+        Course course = courseRepository.findByCourseCode(courseCode)
+                .orElseThrow(() -> new CourseNotFoundException(courseCode));
+
+        if(role == UserRole.FACULTY){
+            if(course.getFaculty() == null){
+                throw FacultyNotFoundException.courseHasNoFaculty(course.getId());
+            }
+            if(!course.getFaculty().getId().equals(employeeId)) {
+                throw new FacultyNotAssignedToCourseException(employeeId, course.getCourseCode());
+            }
+        }
+
         return enrollmentRepository.findByCourse_CourseCode(courseCode)
                 .stream()
                 .map(Enrollment::getStudent)
@@ -94,7 +115,12 @@ public class CourseServiceImpl implements CourseService {
             updatedCourse.setCourseName(request.courseName());
         }
 
-        if(request.courseCode() != null){
+        if (request.courseCode() != null) {
+            if (!request.courseCode().equals(updatedCourse.getCourseCode())
+                    && courseRepository.existsByCourseCode(request.courseCode())) {
+                throw new CourseAlreadyExistsException(request.courseCode());
+            }
+
             updatedCourse.setCourseCode(request.courseCode());
         }
 
@@ -108,7 +134,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course assignFacultyToCourse(UUID courseId, UUID facultyId) {
         Faculty faculty = facultyRepository.findById(facultyId)
-                .orElseThrow(() -> new FacultyNotFoundException(facultyId));
+                .orElseThrow(() -> FacultyNotFoundException.facultyNotFound(facultyId));
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException(courseId));

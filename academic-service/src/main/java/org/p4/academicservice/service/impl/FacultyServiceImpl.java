@@ -25,7 +25,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public Faculty getFacultyById(UUID id) {
         return facultyRepository.findById(id)
-                .orElseThrow(() -> new FacultyNotFoundException(id));
+                .orElseThrow(() -> FacultyNotFoundException.facultyNotFound(id));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public Faculty updateFaculty(UUID id, UpdateFacultyRequest request) {
         Faculty updatedFaculty = facultyRepository.findById(id)
-                .orElseThrow(() -> new FacultyNotFoundException(id));
+                .orElseThrow(() -> FacultyNotFoundException.facultyNotFound(id));
 
         if(request.firstName() != null){
             updatedFaculty.setFirstName(request.firstName());
@@ -66,7 +66,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public void deleteFaculty(UUID id) {
         Faculty faculty = facultyRepository.findById(id)
-                .orElseThrow(() -> new FacultyNotFoundException(id));
+                .orElseThrow(() -> FacultyNotFoundException.facultyNotFound(id));
 
         facultyRepository.delete(faculty);
     }

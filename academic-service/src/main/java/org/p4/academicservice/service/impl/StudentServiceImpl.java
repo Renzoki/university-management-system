@@ -40,6 +40,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student addStudent(NewStudentRequest request) {
+        UUID id = request.id();
         String firstName = request.firstName();
         String lastName = request.lastName();
         String email = request.email();
@@ -48,7 +49,7 @@ public class StudentServiceImpl implements StudentService {
             throw new StudentEmailAlreadyExistsException(request.email());
         }
 
-        Student student = new Student(firstName, lastName, email);
+        Student student = new Student(id, firstName, lastName, email);
         return studentRepository.save(student);
     }
 

@@ -6,6 +6,7 @@ import org.p4.academicservice.model.entity.base.Person;
 import org.p4.academicservice.model.entity.enums.StudentStatus;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "student")
@@ -22,9 +23,9 @@ public class Student extends Person {
 
     public Student() {}
 
-    public Student(String firstName, String lastName, String email) {
+    public Student(UUID id, String firstName, String lastName, String email) {
         this.status = StudentStatus.NOT_ENROLLED;
-        super(firstName, lastName, email);
+        super(id, firstName, lastName, email);
     }
 
     public StudentStatus getStatus() {

@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             CourseAlreadyExistsException.class,
             StudentEmailAlreadyExistsException.class,
+            FacultyEmailAlreadyExistsException.class,
             StudentAlreadyEnrolledInCourseException.class
     })
     public ResponseEntity<ErrorDTO> handleConflict(RuntimeException ex) {

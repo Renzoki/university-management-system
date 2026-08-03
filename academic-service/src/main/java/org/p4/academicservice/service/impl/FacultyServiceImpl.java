@@ -1,5 +1,6 @@
 package org.p4.academicservice.service.impl;
 
+import org.p4.academicservice.exception.FacultyEmailAlreadyExistsException;
 import org.p4.academicservice.exception.ResourceNotFoundException;
 import org.p4.academicservice.model.dto.request.NewFacultyRequest;
 import org.p4.academicservice.model.dto.request.UpdateFacultyRequest;
@@ -35,7 +36,11 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty addFaculty(NewFacultyRequest request) {
+        if (facultyRepository.existsByEmail(request.email())) {
+            throw new FacultyEmailAlreadyExistsException(request.email());
+        }
         Faculty faculty = new Faculty(
+                request.id(),
                 request.firstName(),
                 request.lastName(),
                 request.email());

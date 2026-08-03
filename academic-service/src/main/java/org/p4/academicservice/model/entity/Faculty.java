@@ -5,6 +5,7 @@ import org.p4.academicservice.model.entity.base.Person;
 import org.p4.academicservice.model.entity.enums.FacultyStatus;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "faculty")
@@ -19,8 +20,8 @@ public class Faculty extends Person {
 
     public Faculty() {}
 
-    public Faculty(String firstName, String lastName, String email){
-        super(firstName, lastName, email);
+    public Faculty(UUID id, String firstName, String lastName, String email){
+        super(id, firstName, lastName, email);
     }
 
     public FacultyStatus getStatus() {

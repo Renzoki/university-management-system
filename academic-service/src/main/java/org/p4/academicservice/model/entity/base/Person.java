@@ -24,7 +24,8 @@ public class Person {
 
     protected Person() {}
 
-    protected Person(String firstName, String lastName, String email) {
+    protected Person(UUID id, String firstName, String lastName, String email) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

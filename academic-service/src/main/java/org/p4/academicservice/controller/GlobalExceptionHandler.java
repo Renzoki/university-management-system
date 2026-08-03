@@ -17,65 +17,43 @@ import tools.jackson.databind.exc.InvalidFormatException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleResourceNotFound(ResourceNotFoundException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            CourseAlreadyExistsException.class,
+            StudentEmailAlreadyExistsException.class,
+            StudentAlreadyEnrolledInCourseException.class
+    })
+    public ResponseEntity<ErrorDTO> handleConflict(RuntimeException ex) {
+        return error(HttpStatus.CONFLICT, ex);
     }
 
-    @ExceptionHandler(StudentNotEnrolledInCourseException.class)
-    public ResponseEntity<ErrorDTO> handleStudentNotEnrolledInCourse(StudentNotEnrolledInCourseException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            ResourceNotFoundException.class
+    })
+    public ResponseEntity<ErrorDTO> handleNotFound(RuntimeException ex) {
+        return error(HttpStatus.NOT_FOUND, ex);
     }
 
-    @ExceptionHandler(FacultyNotAssignedToCourseException.class)
-    public ResponseEntity<ErrorDTO> handleFacutyNotFound(FacultyNotAssignedToCourseException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            FacultyNotAssignedToCourseException.class,
+            StudentNotAuthorizedToEnrollException.class
+    })
+    public ResponseEntity<ErrorDTO> handleConflictState(RuntimeException ex) {
+        return error(HttpStatus.FORBIDDEN, ex);
     }
 
-    @ExceptionHandler(CourseAlreadyExistsException.class)
-    public ResponseEntity<ErrorDTO> handleCourseAlreadyExists(CourseAlreadyExistsException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(StudentEmailAlreadyExistsException.class)
-    public ResponseEntity<ErrorDTO> handleStudentEmailAlreadyExists(StudentEmailAlreadyExistsException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(EnrollmentAlreadyCompletedException.class)
-    public ResponseEntity<ErrorDTO> handleEnrollmentAlreadyCompleted(EnrollmentAlreadyCompletedException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
-    }
-
-
-    @ExceptionHandler(CourseDeletionNotAllowedException.class)
-    public ResponseEntity<ErrorDTO> handleInvalidCourseDeletion(CourseDeletionNotAllowedException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(StudentNotEnrolledException.class)
-    public ResponseEntity<ErrorDTO> handleUnenrolledStudentTryingToEnroll(StudentNotEnrolledException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(EnrollmentStillActiveException.class)
-    public ResponseEntity<ErrorDTO> handleInvalidEnrollmentDeletion(EnrollmentStillActiveException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(CourseNotOfferedException.class)
-    public ResponseEntity<ErrorDTO> handleTryingToEnrollInUnofferedCourse(CourseNotOfferedException ex){
-        String message = ex.getMessage();
-        return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.CONFLICT);
+    @ExceptionHandler({
+            CourseDeletionNotAllowedException.class,
+            CourseHasNoFacultyAssignedException.class,
+            CourseNotOfferedException.class,
+            EnrollmentAlreadyCompletedException.class,
+            EnrollmentAlreadyDroppedException.class,
+            EnrollmentNotActiveException.class,
+            EnrollmentStillActiveException.class,
+            StudentNotEnrolledException.class,
+            StudentNotEnrolledInCourseException.class
+    })
+    public ResponseEntity<ErrorDTO> handleBadRequest(RuntimeException ex) {
+        return error(HttpStatus.CONFLICT, ex);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -88,7 +66,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(new ErrorDTO(message), HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorDTO> handleInvalidPathVariable(MethodArgumentTypeMismatchException ex){
@@ -138,5 +115,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(new ErrorDTO(message));
+    }
+
+    private ResponseEntity<ErrorDTO> error(HttpStatus status, RuntimeException ex) {
+        return ResponseEntity.status(status)
+                .body(new ErrorDTO(ex.getMessage()));
     }
 }

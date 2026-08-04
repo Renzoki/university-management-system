@@ -22,6 +22,7 @@ public class Faculty extends Person {
 
     public Faculty(UUID id, String firstName, String lastName, String email){
         super(id, firstName, lastName, email);
+        this.status = FacultyStatus.ACTIVE;
     }
 
     public FacultyStatus getStatus() {

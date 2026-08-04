@@ -68,7 +68,7 @@ public class SecurityConfiguration {
                 // ====== GRADING ====== (DONE)
                 .requestMatchers(HttpMethod.GET, "/grades/self/{courseId}").hasRole("STUDENT")
                 .requestMatchers(HttpMethod.GET, "/grades/{studentId}/{courseId}").hasAnyRole("ADMIN", "FACULTY")
-                .requestMatchers(HttpMethod.PUT, "/grades/{enrollmentId}").hasAnyRole("ADMIN, ", "FACULTY")
+                .requestMatchers(HttpMethod.PUT, "/grades/{enrollmentId}").hasAnyRole("ADMIN", "FACULTY")
 
                 .anyRequest().denyAll()
         );

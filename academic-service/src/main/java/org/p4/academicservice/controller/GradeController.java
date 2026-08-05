@@ -24,6 +24,13 @@ public class GradeController {
         this.mapper = mapper;
     }
 
+    /**
+     * Retrieves the grade of the authenticated student for the specified course.
+     *
+     * @param student the authenticated student
+     * @param courseId the unique identifier of the course
+     * @return a {@code ResponseEntity} containing the student's grade as a {@link GradeDTO}
+     */
     @GetMapping("/self/{courseId}")
     public ResponseEntity<GradeDTO> getCurrentUserGrades(
             @AuthenticationPrincipal AuthenticatedUser student,
@@ -35,6 +42,14 @@ public class GradeController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Retrieves the grade of the specified student for the specified course.
+     *
+     * @param employee the authenticated user requesting the grade
+     * @param studentId the unique identifier of the student
+     * @param courseId the unique identifier of the course
+     * @return a {@code ResponseEntity} containing the requested grade as a {@link GradeDTO}
+     */
     @GetMapping("/{studentId}/{courseId}")
     public ResponseEntity<GradeDTO> getGrade(
             @AuthenticationPrincipal AuthenticatedUser employee,
@@ -47,6 +62,14 @@ public class GradeController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Sets or updates the grade for the specified enrollment.
+     *
+     * @param employee the authenticated user assigning the grade
+     * @param enrollmentId the unique identifier of the enrollment
+     * @param request the grade details to be assigned
+     * @return a {@code ResponseEntity} containing the updated grade as a {@link GradeDTO}
+     */
     @PutMapping("/{enrollmentId}")
     public ResponseEntity<GradeDTO> setGrade(
             @AuthenticationPrincipal AuthenticatedUser employee,

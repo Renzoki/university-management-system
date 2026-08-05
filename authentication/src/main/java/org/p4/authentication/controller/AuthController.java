@@ -12,7 +12,7 @@ import org.p4.authentication.service.AuthService;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+    @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
 

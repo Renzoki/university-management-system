@@ -24,6 +24,12 @@ public class EnrollmentController {
         this.mapper = mapper;
     }
 
+    /**
+     * Retrieves all enrollments of the authenticated student.
+     *
+     * @param student the authenticated student
+     * @return a {@code ResponseEntity} containing a list of the student's enrollments as {@link EnrollmentDTO} objects
+     */
     @GetMapping("/student/self")
     public ResponseEntity<List<EnrollmentDTO>> getCurrentStudentEnrollments(
             @AuthenticationPrincipal AuthenticatedUser student
@@ -37,6 +43,12 @@ public class EnrollmentController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Retrieves all enrollments of the specified student.
+     *
+     * @param studentId the unique identifier of the student
+     * @return a {@code ResponseEntity} containing a list of the student's enrollments as {@link EnrollmentDTO} objects
+     */
     @GetMapping("/students/{studentId}")
     public ResponseEntity<List<EnrollmentDTO>> getStudentEnrollments(
             @PathVariable UUID studentId
@@ -50,6 +62,13 @@ public class EnrollmentController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Retrieves all enrollments for the specified course.
+     *
+     * @param employee the authenticated user requesting the course enrollments
+     * @param courseId the unique identifier of the course
+     * @return a {@code ResponseEntity} containing a list of enrollments for the course as {@link EnrollmentDTO} objects
+     */
     @GetMapping("/courses/{courseId}")
     public ResponseEntity<List<EnrollmentDTO>> getCourseEnrollments(
             @AuthenticationPrincipal AuthenticatedUser employee,
@@ -64,6 +83,13 @@ public class EnrollmentController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Enrolls the authenticated student in the specified course.
+     *
+     * @param authStudent the authenticated student
+     * @param courseId the unique identifier of the course
+     * @return a {@code ResponseEntity} containing the newly created enrollment as a {@link EnrollmentDTO}
+     */
     @PostMapping("/self/{courseId}")
     public ResponseEntity<EnrollmentDTO> addCurrentStudentEnrollment(
             @AuthenticationPrincipal AuthenticatedUser authStudent,
@@ -74,6 +100,13 @@ public class EnrollmentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    /**
+     * Enrolls the specified student in the specified course.
+     *
+     * @param studentId the unique identifier of the student
+     * @param courseId the unique identifier of the course
+     * @return a {@code ResponseEntity} containing the newly created enrollment as a {@link EnrollmentDTO}
+     */
     @PostMapping("/{studentId}/{courseId}")
     public ResponseEntity<EnrollmentDTO> addEnrollment(
             @PathVariable UUID studentId,
@@ -84,6 +117,13 @@ public class EnrollmentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    /**
+     * Drops an enrollment for the authenticated student.
+     *
+     * @param authStudent the authenticated student
+     * @param enrollmentId the unique identifier of the enrollment to drop
+     * @return a {@code ResponseEntity} with no content upon successful completion
+     */
     @PatchMapping("/self/{enrollmentId}")
     public ResponseEntity<Void> dropCurrentStudentEnrollment(
             @AuthenticationPrincipal AuthenticatedUser authStudent,
@@ -93,6 +133,13 @@ public class EnrollmentController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Drops the specified enrollment for the specified student.
+     *
+     * @param studentId the unique identifier of the student
+     * @param enrollmentId the unique identifier of the enrollment to drop
+     * @return a {@code ResponseEntity} with no content upon successful completion
+     */
     @PatchMapping("/{studentId}/{enrollmentId}")
     public ResponseEntity<Void> dropEnrollment(
             @PathVariable UUID studentId,
@@ -102,6 +149,12 @@ public class EnrollmentController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Permanently deletes an enrollment.
+     *
+     * @param enrollmentId the unique identifier of the enrollment to delete
+     * @return a {@code ResponseEntity} with no content upon successful deletion
+     */
     @DeleteMapping("/{enrollmentId}")
     public ResponseEntity<Void> deleteEnrollment(@PathVariable UUID enrollmentId){
         enrollmentService.deleteEnrollment(enrollmentId);

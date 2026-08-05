@@ -33,6 +33,12 @@ public class CourseController {
         this.mapper = mapper;
     }
 
+    /**
+     * Retrieves a course by its unique identifier.
+     *
+     * @param courseId the unique identifier of the course to retrieve
+     * @return a {@code ResponseEntity} containing the requested course as a {@link CourseDTO}
+     */
     @GetMapping("/{courseId}")
     public ResponseEntity<CourseDTO> getCourseById(
             @PathVariable UUID courseId
@@ -44,6 +50,12 @@ public class CourseController {
         );
     }
 
+    /**
+     * Retrieves a course by its course code.
+     *
+     * @param courseCode the unique course code of the course to retrieve
+     * @return a {@code ResponseEntity} containing the requested course as a {@link CourseDTO}
+     */
     @GetMapping("/code/{courseCode}")
     public ResponseEntity<CourseDTO> getCourseByCode(
             @PathVariable
@@ -59,6 +71,11 @@ public class CourseController {
         );
     }
 
+    /**
+     * Retrieves all courses.
+     *
+     * @return a {@code ResponseEntity} containing a list of all courses as {@link CourseDTO} objects
+     */
     @GetMapping
     public ResponseEntity<List<CourseDTO>> getAllCourses(){
         return ResponseEntity.ok(
@@ -69,6 +86,13 @@ public class CourseController {
         );
     }
 
+    /**
+     * Retrieves all students enrolled in the specified course.
+     *
+     * @param employee the authenticated user requesting the enrolled students
+     * @param courseId the unique identifier of the course
+     * @return a {@code ResponseEntity} containing a list of enrolled students as {@link StudentDTO} objects
+     */
     @GetMapping("/{courseId}/students")
     public ResponseEntity<List<StudentDTO>> getStudentsByCourseId(
             @AuthenticationPrincipal AuthenticatedUser employee,
@@ -81,6 +105,13 @@ public class CourseController {
         );
     }
 
+    /**
+     * Retrieves all students enrolled in the course with the specified course code.
+     *
+     * @param employee the authenticated user requesting the enrolled students
+     * @param courseCode the unique course code of the course
+     * @return a {@code ResponseEntity} containing a list of enrolled students as {@link StudentDTO} objects
+     */
     @GetMapping("/code/{courseCode}/students")
     public ResponseEntity<List<StudentDTO>> getStudentsByCourseCode(
             @AuthenticationPrincipal AuthenticatedUser employee,
@@ -96,6 +127,12 @@ public class CourseController {
         );
     }
 
+    /**
+     * Creates a new course.
+     *
+     * @param request the details of the course to be created
+     * @return a {@code ResponseEntity} containing the newly created course as a {@link CourseDTO}
+     */
     @PostMapping
     public ResponseEntity<CourseDTO> addNewCourse(
             @Valid @RequestBody NewCourseRequest request
@@ -107,6 +144,13 @@ public class CourseController {
                 .body(response);
     }
 
+    /**
+     * Updates an existing course.
+     *
+     * @param courseId the unique identifier of the course to update
+     * @param request the updated course details
+     * @return a {@code ResponseEntity} containing the updated course as a {@link CourseDTO}
+     */
     @PutMapping("/{courseId}")
     public ResponseEntity<CourseDTO> updateCourse(
             @PathVariable UUID courseId,
@@ -118,6 +162,13 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Assigns a faculty member to a course.
+     *
+     * @param courseId the unique identifier of the course
+     * @param facultyId the unique identifier of the faculty member to assign
+     * @return a {@code ResponseEntity} containing the updated course as a {@link CourseDTO}
+     */
     @PatchMapping("/{courseId}/faculty/{facultyId}")
     public ResponseEntity<CourseDTO> assignFacultyToCourse(
             @PathVariable UUID courseId,
@@ -129,6 +180,12 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Deletes a course by its unique identifier.
+     *
+     * @param courseId the unique identifier of the course to delete
+     * @return a {@code ResponseEntity} with no content upon successful deletion
+     */
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Void> deleteCourse(@PathVariable UUID courseId){
         courseService.deleteCourseById(courseId);

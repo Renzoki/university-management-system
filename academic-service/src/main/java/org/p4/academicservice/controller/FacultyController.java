@@ -27,6 +27,12 @@ public class FacultyController {
         this.mapper = mapper;
     }
 
+    /**
+     * Retrieves the profile of the authenticated faculty member.
+     *
+     * @param authFaculty the authenticated faculty member
+     * @return a {@code ResponseEntity} containing the faculty member's profile as a {@link FacultyDTO}
+     */
     @GetMapping("/self")
     public ResponseEntity<FacultyDTO> getCurrentFaculty(
             @AuthenticationPrincipal AuthenticatedUser authFaculty
@@ -36,6 +42,12 @@ public class FacultyController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Retrieves a faculty member by their unique identifier.
+     *
+     * @param facultyId the unique identifier of the faculty member
+     * @return a {@code ResponseEntity} containing the requested faculty member as a {@link FacultyDTO}
+     */
     @GetMapping("/{facultyId}")
     public ResponseEntity<FacultyDTO> getFacultyById(
             @PathVariable UUID facultyId
@@ -45,6 +57,11 @@ public class FacultyController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Retrieves all faculty members.
+     *
+     * @return a {@code ResponseEntity} containing a list of all faculty members as {@link FacultyDTO} objects
+     */
     @GetMapping
     public ResponseEntity<List<FacultyDTO>> getAllFacultyMembers(){
         List<Faculty> facultyList = facultyService.getAllFacultyMembers();
@@ -55,6 +72,12 @@ public class FacultyController {
         );
     }
 
+    /**
+     * Creates a new faculty member.
+     *
+     * @param request the details of the faculty member to be created
+     * @return a {@code ResponseEntity} containing the newly created faculty member as a {@link FacultyDTO}
+     */
     @PostMapping
     public ResponseEntity<FacultyDTO> addFaculty(
             @Valid @RequestBody NewFacultyRequest request
@@ -64,6 +87,13 @@ public class FacultyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * Updates an existing faculty member.
+     *
+     * @param facultyId the unique identifier of the faculty member to update
+     * @param request the updated faculty member details
+     * @return a {@code ResponseEntity} containing the updated faculty member as a {@link FacultyDTO}
+     */
     @PutMapping("/{facultyId}")
     public ResponseEntity<FacultyDTO> updateFaculty(
             @PathVariable UUID facultyId,
@@ -74,6 +104,12 @@ public class FacultyController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Deletes a faculty member by their unique identifier.
+     *
+     * @param facultyId the unique identifier of the faculty member to delete
+     * @return a {@code ResponseEntity} with no content upon successful deletion
+     */
     @DeleteMapping("/{facultyId}")
     public ResponseEntity<Void> deleteFaculty(
             @PathVariable UUID facultyId

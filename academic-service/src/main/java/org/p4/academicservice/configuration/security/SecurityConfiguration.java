@@ -41,11 +41,11 @@ public class SecurityConfiguration {
 
                 // ====== STUDENTS ====== (DONE)
                 .requestMatchers(HttpMethod.GET, "/students/self").authenticated()
-                .requestMatchers(HttpMethod.GET, "/students/{id}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/students/{studentId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/students").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/students").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/students/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/students/{id}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/students/{studentId}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/students/{studentId}").hasRole("ADMIN")
 
                 // ====== FACULTY ====== (DONE)
                 .requestMatchers(HttpMethod.GET, "/faculty/self").hasRole("FACULTY")

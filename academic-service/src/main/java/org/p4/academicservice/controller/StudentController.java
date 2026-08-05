@@ -27,6 +27,12 @@ public class StudentController {
         this.mapper = mapper;
     }
 
+    /**
+     * Retrieves the profile of the authenticated student.
+     *
+     * @param authStudent the authenticated student
+     * @return a {@code ResponseEntity} containing the student's profile as a {@link StudentDTO}
+     */
     @GetMapping("/self")
     public ResponseEntity<StudentDTO> getCurrentStudent(
             @AuthenticationPrincipal AuthenticatedUser authStudent){
@@ -34,14 +40,25 @@ public class StudentController {
         return ResponseEntity.ok(mapper.toDto(student));
     }
 
-    @GetMapping("/{id}")
+    /**
+     * Retrieves a student by their unique identifier.
+     *
+     * @param studentId the unique identifier of the student
+     * @return a {@code ResponseEntity} containing the requested student as a {@link StudentDTO}
+     */
+    @GetMapping("/{studentId}")
     public ResponseEntity<StudentDTO> getStudentById(
-            @PathVariable UUID id
+            @PathVariable UUID studentId
     ){
-        Student student = studentService.getStudentById(id);
+        Student student = studentService.getStudentById(studentId);
         return ResponseEntity.ok(mapper.toDto(student));
     }
 
+    /**
+     * Retrieves all students.
+     *
+     * @return a {@code ResponseEntity} containing a list of all students as {@link StudentDTO} objects
+     */
     @GetMapping
     public ResponseEntity<List<StudentDTO>> getAllStudents(){
         return ResponseEntity.ok(
@@ -51,6 +68,12 @@ public class StudentController {
         );
     }
 
+    /**
+     * Creates a new student.
+     *
+     * @param request the details of the student to be created
+     * @return a {@code ResponseEntity} containing the newly created student as a {@link StudentDTO}
+     */
     @PostMapping
     public ResponseEntity<StudentDTO> addStudent(
             @Valid @RequestBody NewStudentRequest request
@@ -61,20 +84,33 @@ public class StudentController {
                 .body(mapper.toDto(student));
     }
 
-    @PutMapping("{id}")
+    /**
+     * Updates an existing student.
+     *
+     * @param studentId the unique identifier of the student to update
+     * @param request the updated student details
+     * @return a {@code ResponseEntity} containing the updated student as a {@link StudentDTO}
+     */
+    @PutMapping("/{studentId}")
     public ResponseEntity<StudentDTO> updateStudent(
-            @PathVariable UUID id,
+            @PathVariable UUID studentId,
             @Valid @RequestBody UpdateStudentRequest request
     ){
-        Student student = studentService.updateStudent(id, request);
+        Student student = studentService.updateStudent(studentId, request);
         return ResponseEntity.ok(mapper.toDto(student));
     }
 
-    @DeleteMapping("{id}")
+    /**
+     * Deletes a student by their unique identifier.
+     *
+     * @param studentId the unique identifier of the student to delete
+     * @return a {@code ResponseEntity} with no content upon successful deletion
+     */
+    @DeleteMapping("/{studentId}")
     public ResponseEntity<Void> deleteStudent(
-            @PathVariable UUID id
+            @PathVariable UUID studentId
     ){
-        studentService.deleteStudent(id);
+        studentService.deleteStudent(studentId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -59,7 +59,9 @@ export default function StudentCoursesPage() {
   if (!courses || courses.length === 0) {
     return (
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">Courses</h1>
+        <h1 className="text-2xl font-semibold">
+          Courses
+        </h1>
 
         <p className="text-sm text-muted-foreground">
           No courses are currently available.
@@ -68,18 +70,23 @@ export default function StudentCoursesPage() {
     )
   }
 
-  function isActivelyEnrolled(courseId: string) {
-    return (enrollments ?? []).some(
+  function getEnrollment(courseId: string) {
+    return (enrollments ?? []).find(
       (enrollment) =>
         enrollment.course.id === courseId &&
         enrollment.status === "ACTIVE"
     )
   }
 
-  function handleEnroll(courseId: string, courseName: string) {
+  function handleEnroll(
+    courseId: string,
+    courseName: string
+  ) {
     enrollMutation.mutate(courseId, {
       onSuccess: () => {
-        toast.success(`Successfully enrolled in ${courseName}.`)
+        toast.success(
+          `Successfully enrolled in ${courseName}.`
+        )
       },
       onError: (error) => {
         toast.error(
@@ -94,7 +101,9 @@ export default function StudentCoursesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Courses</h1>
+        <h1 className="text-2xl font-semibold">
+          Courses
+        </h1>
 
         <p className="text-sm text-muted-foreground">
           Browse the available courses.
@@ -103,7 +112,7 @@ export default function StudentCoursesPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {courses.map((course) => {
-          const enrolled = isActivelyEnrolled(course.id)
+          const enrollment = getEnrollment(course.id)
 
           return (
             <Card key={course.id}>
@@ -133,7 +142,35 @@ export default function StudentCoursesPage() {
                   )}
                 </div>
 
-                {enrolled ? (
+                {enrollment?.grade ? (
+                  <div className="rounded-md border p-3">
+                    <p className="text-sm font-medium">
+                      Grade
+                    </p>
+
+                    <p className="text-sm text-muted-foreground">
+                      Raw Grade:{" "}
+                      {enrollment.grade.rawGrade}
+                    </p>
+
+                    <p className="text-sm text-muted-foreground">
+                      Grade Equivalent:{" "}
+                      {enrollment.grade.gradeEquivalent}
+                    </p>
+                  </div>
+                ) : enrollment ? (
+                  <div className="rounded-md border p-3">
+                    <p className="text-sm font-medium">
+                      Grade
+                    </p>
+
+                    <p className="text-sm text-muted-foreground">
+                      No grade assigned yet.
+                    </p>
+                  </div>
+                ) : null}
+
+                {enrollment ? (
                   <Button
                     variant="secondary"
                     disabled
@@ -146,7 +183,10 @@ export default function StudentCoursesPage() {
                     className="w-full"
                     disabled={enrollMutation.isPending}
                     onClick={() =>
-                      handleEnroll(course.id, course.name)
+                      handleEnroll(
+                        course.id,
+                        course.name
+                      )
                     }
                   >
                     {enrollMutation.isPending

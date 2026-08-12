@@ -12,10 +12,20 @@ import {
 
 export const gradeKeys = {
   all: ["grades"] as const,
+
   mine: (courseId: string) =>
     [...gradeKeys.all, "mine", courseId] as const,
-  student: (studentId: string, courseId: string) =>
-    [...gradeKeys.all, "student", studentId, courseId] as const,
+
+  student: (
+    studentId: string,
+    courseId: string
+  ) =>
+    [
+      ...gradeKeys.all,
+      "student",
+      studentId,
+      courseId,
+    ] as const,
 }
 
 export function useMyGrade(courseId: string) {
@@ -31,8 +41,12 @@ export function useStudentGrade(
   courseId: string
 ) {
   return useQuery({
-    queryKey: gradeKeys.student(studentId, courseId),
-    queryFn: () => getStudentGrade(studentId, courseId),
+    queryKey: gradeKeys.student(
+      studentId,
+      courseId
+    ),
+    queryFn: () =>
+      getStudentGrade(studentId, courseId),
     enabled: !!studentId && !!courseId,
   })
 }
@@ -47,7 +61,8 @@ export function useSetGrade() {
     }: {
       enrollmentId: string
       request: SetGradeRequest
-    }) => setGrade(enrollmentId, request),
+    }) =>
+      setGrade(enrollmentId, request),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

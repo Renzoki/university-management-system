@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom"
 import {
   Card,
   CardContent,
@@ -27,76 +26,271 @@ export default function StudentEnrollmentsPage() {
   if (isError) {
     return (
       <p className="text-sm text-destructive">
-        Failed to load your enrollments: {(error as Error).message}
+        Failed to load your enrollments:{" "}
+        {(error as Error).message}
       </p>
     )
   }
 
-  const activeEnrollments = (enrollments ?? []).filter(
+  const currentEnrollments = (enrollments ?? []).filter(
     (enrollment) => enrollment.status === "ACTIVE"
   )
 
-  if (activeEnrollments.length === 0) {
+  const completedEnrollments = (enrollments ?? []).filter(
+    (enrollment) => enrollment.status === "COMPLETED"
+  )
+
+  function renderGrade(
+    enrollment: (typeof enrollments)[number]
+  ) {
+    if (!enrollment.grade) {
+      return (
+        <span className="text-muted-foreground">
+          No grade assigned yet
+        </span>
+      )
+    }
+
     return (
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">My Enrollments</h1>
-        <p className="text-sm text-muted-foreground">
-          You are not currently enrolled in any courses.
+      <div className="space-y-1">
+        <p>
+          Raw: {enrollment.grade.rawGrade}
+        </p>
+
+        <p>
+          Equivalent: {enrollment.grade.gradeEquivalent}
         </p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">My Enrollments</h1>
+        <h1 className="text-2xl font-semibold">
+          My Enrollments
+        </h1>
+
         <p className="text-sm text-muted-foreground">
-          View the courses you are currently enrolled in.
+          View your current and completed courses.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {activeEnrollments.map((enrollment) => {
-          const course = enrollment.course
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold">
+            Current Courses
+          </h2>
 
-          return (
-            <Link
-              key={enrollment.enrollmentId}
-              to={`/student/courses/${course.id}`}
-            >
-              <Card className="h-full transition-colors hover:bg-accent/40">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <CardTitle>{course.name}</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Courses you are currently enrolled in.
+          </p>
+        </div>
 
-                    <Badge>{enrollment.status}</Badge>
-                  </div>
-                </CardHeader>
+        {currentEnrollments.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">
+                You are not currently enrolled in any courses.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Current Enrollments
+              </CardTitle>
+            </CardHeader>
 
-                <CardContent className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    {course.courseCode}
-                  </p>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left">
+                      <th className="px-4 py-3 font-medium">
+                        Course
+                      </th>
 
-                  {course.faculty && (
-                    <p className="text-sm">
-                      {course.faculty.firstName}{" "}
-                      {course.faculty.lastName}
-                    </p>
-                  )}
+                      <th className="px-4 py-3 font-medium">
+                        Code
+                      </th>
 
-                  {enrollment.grade && (
-                    <p className="text-sm text-muted-foreground">
-                      Grade: {enrollment.grade.gradeEquivalent}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </Link>
-          )
-        })}
-      </div>
+                      <th className="px-4 py-3 font-medium">
+                        Faculty
+                      </th>
+
+                      <th className="px-4 py-3 font-medium">
+                        Grade
+                      </th>
+
+                      <th className="px-4 py-3 font-medium">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {currentEnrollments.map(
+                      (enrollment) => (
+                        <tr
+                          key={enrollment.enrollmentId}
+                          className="border-b last:border-0"
+                        >
+                          <td className="px-4 py-3 font-medium">
+                            {enrollment.course.name}
+                          </td>
+
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {enrollment.course.courseCode}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            {enrollment.course.faculty ? (
+                              <>
+                                {
+                                  enrollment.course.faculty
+                                    .firstName
+                                }{" "}
+                                {
+                                  enrollment.course.faculty
+                                    .lastName
+                                }
+                              </>
+                            ) : (
+                              <span className="text-muted-foreground">
+                                No faculty assigned
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            {renderGrade(enrollment)}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            <Badge>
+                              {enrollment.status}
+                            </Badge>
+                          </td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </section>
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold">
+            Completed Courses
+          </h2>
+
+          <p className="text-sm text-muted-foreground">
+            Courses you have already completed.
+          </p>
+        </div>
+
+        {completedEnrollments.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">
+                You have not completed any courses yet.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Completed Enrollments
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left">
+                      <th className="px-4 py-3 font-medium">
+                        Course
+                      </th>
+
+                      <th className="px-4 py-3 font-medium">
+                        Code
+                      </th>
+
+                      <th className="px-4 py-3 font-medium">
+                        Faculty
+                      </th>
+
+                      <th className="px-4 py-3 font-medium">
+                        Grade
+                      </th>
+
+                      <th className="px-4 py-3 font-medium">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {completedEnrollments.map(
+                      (enrollment) => (
+                        <tr
+                          key={enrollment.enrollmentId}
+                          className="border-b last:border-0"
+                        >
+                          <td className="px-4 py-3 font-medium">
+                            {enrollment.course.name}
+                          </td>
+
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {enrollment.course.courseCode}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            {enrollment.course.faculty ? (
+                              <>
+                                {
+                                  enrollment.course.faculty
+                                    .firstName
+                                }{" "}
+                                {
+                                  enrollment.course.faculty
+                                    .lastName
+                                }
+                              </>
+                            ) : (
+                              <span className="text-muted-foreground">
+                                No faculty assigned
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            {renderGrade(enrollment)}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            <Badge>
+                              {enrollment.status}
+                            </Badge>
+                          </td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </section>
     </div>
   )
 }

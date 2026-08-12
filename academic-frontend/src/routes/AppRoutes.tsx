@@ -14,6 +14,7 @@ import LoginPage from "@/pages/auth/LoginPage"
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage"
 import FacultyDashboardPage from "@/pages/faculty/FacultyDashboardPage"
 import FacultyCoursesPage from "@/pages/faculty/FacultyCoursesPage"
+import FacultyCourseDetailPage from "@/pages/faculty/FacultyCourseDetailPage"
 import StudentDashboardPage from "@/pages/student/StudentDashboardPage"
 import StudentCoursesPage from "@/pages/student/StudentCoursesPage"
 import StudentEnrollmentsPage from "@/pages/student/StudentEnrollmentsPage"
@@ -55,8 +56,20 @@ export default function AppRoutes() {
           {/* Faculty */}
           <Route element={<RoleRoute allowedRoles={["FACULTY"]} />}>
             <Route element={<FacultyLayout />}>
-              <Route path="/faculty" element={<FacultyDashboardPage />} />
-              <Route path="/faculty/courses" element={<FacultyCoursesPage />} />
+              <Route
+                path="/faculty"
+                element={<FacultyDashboardPage />}
+              />
+
+              <Route
+                path="/faculty/courses"
+                element={<FacultyCoursesPage />}
+              />
+
+              <Route
+                path="/faculty/courses/:courseId"
+                element={<FacultyCourseDetailPage />}
+              />
             </Route>
           </Route>
 

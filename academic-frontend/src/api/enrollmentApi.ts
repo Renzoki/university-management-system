@@ -9,6 +9,16 @@ export async function getMyEnrollments(): Promise<EnrollmentDto[]> {
   return response.data
 }
 
+export async function getCourseEnrollments(
+  courseId: string
+): Promise<EnrollmentDto[]> {
+  const response = await academicClient.get<EnrollmentDto[]>(
+    `/enrollments/courses/${courseId}`
+  )
+
+  return response.data
+}
+
 export async function enrollInCourse(
   courseId: string
 ): Promise<EnrollmentDto> {

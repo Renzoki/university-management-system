@@ -6,18 +6,29 @@ import {
 import {
   dropEnrollment,
   enrollInCourse,
+  getCourseEnrollments,
   getMyEnrollments,
 } from "@/api/enrollmentApi"
 
 export const enrollmentKeys = {
   all: ["enrollments"] as const,
   mine: () => [...enrollmentKeys.all, "mine"] as const,
+  course: (courseId: string) =>
+    [...enrollmentKeys.all, "course", courseId] as const,
 }
 
 export function useMyEnrollments() {
   return useQuery({
     queryKey: enrollmentKeys.mine(),
     queryFn: getMyEnrollments,
+  })
+}
+
+export function useCourseEnrollments(courseId: string) {
+  return useQuery({
+    queryKey: enrollmentKeys.course(courseId),
+    queryFn: () => getCourseEnrollments(courseId),
+    enabled: !!courseId,
   })
 }
 

@@ -1,19 +1,28 @@
-/** Authentication-related types. Filled in when auth is implemented. */
-
-export type Role = "ADMIN" | "FACULTY" | "STUDENT"
-
-export interface AuthUser {
-  id: number
-  email: string
-  role: Role
-}
+export type Role = "ADMIN" | "FACULTY" | "STUDENT";
+export type UserRole = Role;
+export type UserStatus = string;
 
 export interface LoginRequest {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export interface LoginResponse {
-  token: string
-  user: AuthUser
+  accessToken: string;
+}
+
+export interface JwtPayload {
+  sub: string;
+  role: UserRole;
+  email: string;
+  status: UserStatus;
+  iat: number;
+  exp: number;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
 }

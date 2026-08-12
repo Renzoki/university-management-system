@@ -1,13 +1,17 @@
-import { Outlet } from "react-router-dom"
+import { Navigate, Outlet, useLocation } from "react-router-dom"
+import { useAuth } from "@/hooks/useAuth"
 
-/**
- * Route guard placeholder.
- *
- * Authentication has not been implemented yet (per Prompt 1 scope).
- * Right now this simply renders its children. In the auth prompt,
- * this will check for a valid JWT / user session and redirect
- * unauthenticated users to /login.
- */
 export default function ProtectedRoute() {
+  const { isAuthenticated, isLoading } = useAuth()
+  const location = useLocation()
+
+  if (isLoading) {
+    return null
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
   return <Outlet />
 }

@@ -1,18 +1,21 @@
-import { Outlet } from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom"
 import type { Role } from "@/types"
+import { useAuth } from "@/hooks/useAuth"
 
 interface RoleRouteProps {
   allowedRoles: Role[]
 }
 
-/**
- * Role guard placeholder.
- *
- * Will check the authenticated user's role against `allowedRoles`
- * and redirect (e.g. to a 403 page) if it doesn't match. For now,
- * with no auth in place, it simply renders its children.
- */
 export default function RoleRoute({ allowedRoles }: RoleRouteProps) {
-  void allowedRoles
+  const { user } = useAuth()
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    return <Navigate to="/403" replace />
+  }
+
   return <Outlet />
 }

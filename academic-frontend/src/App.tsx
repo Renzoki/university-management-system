@@ -5,14 +5,19 @@ import { Toaster } from "sonner"
 
 import { queryClient } from "@/api/queryClient"
 import AppRoutes from "@/routes/AppRoutes"
+import { AuthProvider } from "@/contexts/AuthContext"
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppRoutes />
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+
         <Toaster richColors position="top-right" />
       </BrowserRouter>
+
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )

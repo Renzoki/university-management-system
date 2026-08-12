@@ -1,35 +1,46 @@
-/**
- * Placeholder DTOs mirroring the backend entities.
- * Will be fleshed out once each feature (courses, students,
- * faculty, enrollments, grades) is implemented.
- */
+export type CourseStatus = string
+export type StudentStatus = string
+export type FacultyStatus = string
 
-export interface CourseDto {
-  id: number
-  courseCode: string
-  title: string
+export type EnrollmentStatus =
+  | "ACTIVE"
+  | "COMPLETED"
+  | "DROPPED"
+
+export interface FacultyDto {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  status: FacultyStatus
 }
 
 export interface StudentDto {
-  id: number
-  name: string
+  id: string
+  firstName: string
+  lastName: string
   email: string
+  status: StudentStatus
 }
 
-export interface FacultyDto {
-  id: number
+export interface CourseDto {
+  id: string
   name: string
-  email: string
-}
-
-export interface EnrollmentDto {
-  id: number
-  studentId: number
-  courseId: number
-  status: string
+  courseCode: string
+  status: CourseStatus
+  faculty: FacultyDto | null
 }
 
 export interface GradeDto {
-  enrollmentId: number
-  grade: string | null
+  gradeId: string
+  rawGrade: number
+  gradeEquivalent: number
+}
+
+export interface EnrollmentDto {
+  enrollmentId: string
+  course: CourseDto
+  student: StudentDto
+  grade: GradeDto | null
+  status: EnrollmentStatus
 }

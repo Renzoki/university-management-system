@@ -226,11 +226,12 @@ public class SeedService {
     ) {
 
         // Juan Dela Cruz
-        academicServiceClient.enrollStudent(
-                jwt,
-                JUAN_DELA_CRUZ_ID,
-                ccprog1.id()
-        );
+        UUID juanCcprog1EnrollmentId =
+                academicServiceClient.enrollStudent(
+                        jwt,
+                        JUAN_DELA_CRUZ_ID,
+                        ccprog1.id()
+                );
 
         academicServiceClient.enrollStudent(
                 jwt,
@@ -238,11 +239,12 @@ public class SeedService {
                 csalgcm.id()
         );
 
-        academicServiceClient.enrollStudent(
-                jwt,
-                JUAN_DELA_CRUZ_ID,
-                csintsy.id()
-        );
+        UUID juanCsintsyEnrollmentId =
+                academicServiceClient.enrollStudent(
+                        jwt,
+                        JUAN_DELA_CRUZ_ID,
+                        csintsy.id()
+                );
 
         // Ana Reyes
         academicServiceClient.enrollStudent(
@@ -251,11 +253,12 @@ public class SeedService {
                 ccprog1.id()
         );
 
-        academicServiceClient.enrollStudent(
-                jwt,
-                ANA_REYES_ID,
-                ccdsalg.id()
-        );
+        UUID anaCcdsalgEnrollmentId =
+                academicServiceClient.enrollStudent(
+                        jwt,
+                        ANA_REYES_ID,
+                        ccdsalg.id()
+                );
 
         academicServiceClient.enrollStudent(
                 jwt,
@@ -263,6 +266,22 @@ public class SeedService {
                 csintsy.id()
         );
 
-        // Miguel Garcia intentionally has no enrollments.
+        academicServiceClient.assignGrade(
+                jwt,
+                juanCcprog1EnrollmentId,
+                85
+        );
+
+        academicServiceClient.assignGrade(
+                jwt,
+                juanCsintsyEnrollmentId,
+                92
+        );
+
+        academicServiceClient.assignGrade(
+                jwt,
+                anaCcdsalgEnrollmentId,
+                78
+        );
     }
 }

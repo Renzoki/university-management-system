@@ -2,10 +2,14 @@ package org.p4.academicservice.controller;
 
 import jakarta.validation.Valid;
 import org.p4.academicservice.configuration.security.AuthenticatedUser;
+import org.p4.academicservice.exception.ResourceNotFoundException;
 import org.p4.academicservice.mapper.ResponseMapper;
 import org.p4.academicservice.model.dto.request.SetGradeRequest;
 import org.p4.academicservice.model.dto.response.GradeDTO;
+import org.p4.academicservice.model.entity.Enrollment;
 import org.p4.academicservice.model.entity.Grade;
+import org.p4.academicservice.model.entity.enums.EnrollmentStatus;
+import org.p4.academicservice.repository.EnrollmentRepository;
 import org.p4.academicservice.service.GradeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,10 +21,12 @@ import java.util.UUID;
 @RequestMapping("grades")
 public class GradeController {
     private final GradeService gradeService;
+    private final EnrollmentRepository enrollmentRepository;
     private final ResponseMapper mapper;
 
-    public GradeController(GradeService gradeService, ResponseMapper mapper){
+    public GradeController(GradeService gradeService, EnrollmentRepository enrollmentRepository, ResponseMapper mapper){
         this.gradeService = gradeService;
+        this.enrollmentRepository = enrollmentRepository;
         this.mapper = mapper;
     }
 
@@ -76,8 +82,11 @@ public class GradeController {
             @PathVariable UUID enrollmentId,
             @Valid @RequestBody SetGradeRequest request){
         Grade grade = gradeService.setGrade(employee.id(), enrollmentId, employee.role(), request);
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", enrollmentId));
         GradeDTO response = mapper.toDto(grade);
-
+        enrollment.setStatus(EnrollmentStatus.COMPLETED);
+        enrollmentRepository.save(enrollment);
         return ResponseEntity.ok(response);
     }
 }

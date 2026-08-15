@@ -140,28 +140,12 @@ public class EnrollmentController {
      * @param enrollmentId the unique identifier of the enrollment to drop
      * @return a {@code ResponseEntity} with no content upon successful completion
      */
-    @PatchMapping("/{studentId}/{enrollmentId}/drop")
+    @PatchMapping("/{studentId}/{enrollmentId}")
     public ResponseEntity<Void> dropEnrollment(
             @PathVariable UUID studentId,
             @PathVariable UUID enrollmentId
     ){
         enrollmentService.dropEnrollment(studentId, enrollmentId);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Completes the specified enrollment for the specified student.
-     *
-     * @param studentId the unique identifier of the student
-     * @param enrollmentId the unique identifier of the enrollment to drop
-     * @return a {@code ResponseEntity} with no content upon successful completion
-     */
-    @PatchMapping("/{studentId}/{enrollmentId}/complete")
-    public ResponseEntity<Void> completeEnrollment(
-            @PathVariable UUID studentId,
-            @PathVariable UUID enrollmentId
-    ){
-        enrollmentService.completeEnrollment(studentId, enrollmentId);
         return ResponseEntity.noContent().build();
     }
 
@@ -176,5 +160,4 @@ public class EnrollmentController {
         enrollmentService.deleteEnrollment(enrollmentId);
         return ResponseEntity.noContent().build();
     }
-
 }

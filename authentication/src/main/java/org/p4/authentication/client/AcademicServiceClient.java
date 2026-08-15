@@ -4,12 +4,14 @@ import org.p4.authentication.client.request.NewCourseRequest;
 import org.p4.authentication.client.request.NewFacultyRequest;
 import org.p4.authentication.client.request.NewStudentRequest;
 import org.p4.authentication.client.response.CourseResponse;
+import org.p4.authentication.client.response.EnrollmentResponse;
 import org.p4.authentication.model.dto.LoginRequest;
 import org.p4.authentication.model.dto.LoginResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -23,6 +25,7 @@ public class AcademicServiceClient {
     private static final String FACULTY_ENDPOINT = "/faculty";
     private static final String COURSES_ENDPOINT = "/courses";
     private static final String ENROLLMENTS_ENDPOINT = "/enrollments";
+    private static final String GRADES_ENDPOINT = "/grades";
 
     private final WebClient authWebClient;
     private final WebClient academicWebClient;
@@ -107,18 +110,39 @@ public class AcademicServiceClient {
                 .block();
     }
 
-    public void enrollStudent(
+    public UUID enrollStudent(
             String jwt,
             UUID studentId,
             UUID courseId
     ) {
-        academicWebClient.post()
+        EnrollmentResponse response = academicWebClient.post()
                 .uri(
                         ENROLLMENTS_ENDPOINT + "/{studentId}/{courseId}",
                         studentId,
                         courseId
                 )
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .retrieve()
+                .bodyToMono(EnrollmentResponse.class)
+                .block();
+
+        return response.enrollmentId();
+    }
+
+    public void assignGrade(
+            String jwt,
+            UUID enrollmentId,
+            double rawGrade
+    ) {
+        academicWebClient.put()
+                .uri(
+                        GRADES_ENDPOINT + "/{enrollmentId}",
+                        enrollmentId
+                )
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .bodyValue(Map.of(
+                        "rawGrade", rawGrade
+                ))
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();

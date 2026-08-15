@@ -5,7 +5,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useMyEnrollments } from "@/hooks/useEnrollments"
+import { Button } from "@/components/ui/button"
+import {
+  useDropEnrollment,
+  useMyEnrollments,
+} from "@/hooks/useEnrollments"
+import { toast } from "sonner"
 
 export default function StudentEnrollmentsPage() {
   const {
@@ -14,6 +19,8 @@ export default function StudentEnrollmentsPage() {
     isError,
     error,
   } = useMyEnrollments()
+
+  const dropMutation = useDropEnrollment()
 
   if (isLoading) {
     return (
@@ -39,6 +46,20 @@ export default function StudentEnrollmentsPage() {
   const completedEnrollments = (enrollments ?? []).filter(
     (enrollment) => enrollment.status === "COMPLETED"
   )
+
+  async function handleDrop(enrollmentId: string) {
+    try {
+      await dropMutation.mutateAsync(enrollmentId)
+
+      toast.success("Course dropped successfully.")
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to drop the course."
+      )
+    }
+  }
 
   function renderGrade(
     enrollment: (typeof enrollments)[number]
@@ -127,6 +148,10 @@ export default function StudentEnrollmentsPage() {
                       <th className="px-4 py-3 font-medium">
                         Status
                       </th>
+
+                      <th className="px-4 py-3 font-medium">
+                        Action
+                      </th>
                     </tr>
                   </thead>
 
@@ -172,6 +197,22 @@ export default function StudentEnrollmentsPage() {
                             <Badge>
                               {enrollment.status}
                             </Badge>
+                          </td>
+
+                          <td className="px-4 py-3">
+                            <Button
+                              type="button"
+                              disabled={dropMutation.isPending}
+                              onClick={() =>
+                                handleDrop(
+                                  enrollment.enrollmentId
+                                )
+                              }
+                            >
+                              {dropMutation.isPending
+                                ? "Dropping..."
+                                : "Drop"}
+                            </Button>
                           </td>
                         </tr>
                       )

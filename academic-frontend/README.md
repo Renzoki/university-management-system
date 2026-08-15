@@ -1,32 +1,79 @@
-# React + TypeScript + Vite
+# University Management System — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React frontend for the university management system.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Authentication
 
-## React Compiler
+* User login and logout
+* JWT-based authentication
+* Role-based routing
+* Automatic handling of expired authentication
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Student
 
-## Expanding the Oxlint configuration
+Students can:
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+* View their dashboard
+* View available courses
+* Enroll in courses
+* View their enrollments
+* Drop active enrollments
+* View their grades
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### Faculty
+
+Faculty can:
+
+* View their dashboard
+* View their assigned courses
+* View students enrolled in their courses
+* View and manage student grades
+
+### Admin
+
+Admin functionality is supported through the application's role-based routing and API access.
+
+## API Communication
+
+The frontend communicates with the backend services using Axios.
+
+* Authentication Service: `http://localhost:8080`
+* Academic Service: `http://localhost:8081`
+
+JWT access tokens are automatically included in authenticated Academic Service requests.
+
+## Data Management
+
+TanStack Query is used for:
+
+* Server state management
+* API data fetching
+* Mutations
+* Cache invalidation
+* Loading and error states
+
+## Environment Variables
+
+The frontend uses environment variables for the backend URLs:
+
+```text
+VITE_API_BASE_URL
+VITE_AUTH_API_URL
+VITE_ACADEMIC_API_URL
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Project Structure
+
+```text
+src/
+├── api
+├── assets
+├── components
+├── contexts
+├── hooks
+├── layouts
+├── pages
+└── routes
+```

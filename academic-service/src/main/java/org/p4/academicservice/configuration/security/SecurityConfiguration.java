@@ -74,52 +74,20 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/faculty/{facultyId}").hasRole("ADMIN")
 
                         // ====== ENROLLMENTS ======
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/enrollments/student/self"
-                        ).hasRole("STUDENT")
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/enrollments/students/{studentId}"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/enrollments/courses/{courseId}"
-                        ).hasAnyRole("ADMIN", "FACULTY")
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/enrollments/self/{courseId}"
-                        ).hasRole("STUDENT")
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/enrollments/{studentId}/{courseId}"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/enrollments/self/{enrollmentId}"
-                        ).hasRole("STUDENT")
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/enrollments/{studentId}/{enrollmentId}"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(
-                                HttpMethod.DELETE,
-                                "/enrollments/{enrollmentId}"
-                        ).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/enrollments/student/self").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/enrollments/students/{studentId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/enrollments/courses/{courseId}").hasAnyRole("ADMIN", "FACULTY")
+                        .requestMatchers(HttpMethod.POST, "/enrollments/self/{courseId}").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.POST, "/enrollments/{studentId}/{courseId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/enrollments/self/{enrollmentId}").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.PATCH, "/enrollments/{studentId}/{enrollmentId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/enrollments/{studentId}/{enrollmentId}/complete").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/enrollments/{enrollmentId}").hasRole("ADMIN")
 
                         // ====== GRADING ======
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/grades/self/{courseId}"
-                        ).hasRole("STUDENT")
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/grades/{studentId}/{courseId}"
-                        ).hasAnyRole("ADMIN", "FACULTY")
-                        .requestMatchers(
-                                HttpMethod.PUT,
-                                "/grades/{enrollmentId}"
-                        ).hasAnyRole("ADMIN", "FACULTY")
+                        .requestMatchers(HttpMethod.GET,"/grades/self/{courseId}").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET,"/grades/{studentId}/{courseId}").hasAnyRole("ADMIN", "FACULTY")
+                        .requestMatchers(HttpMethod.PUT,"/grades/{enrollmentId}").hasAnyRole("ADMIN", "FACULTY")
 
                         .anyRequest().denyAll()
                 )

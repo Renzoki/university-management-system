@@ -101,6 +101,23 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
+    public void completeEnrollment(UUID studentId, UUID enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findByIdAndStudentId(enrollmentId, studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", enrollmentId));
+
+        if(enrollment.getStatus() == EnrollmentStatus.COMPLETED){
+            throw new EnrollmentAlreadyCompletedException(enrollmentId);
+        }
+
+        if(enrollment.getStatus() == EnrollmentStatus.DROPPED){
+            throw new EnrollmentAlreadyDroppedException(enrollmentId);
+        }
+
+        enrollment.setStatus(EnrollmentStatus.COMPLETED);
+        enrollmentRepository.save(enrollment);
+    }
+
+    @Override
     public void deleteEnrollment(UUID enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new  ResourceNotFoundException("Enrollment", "id", enrollmentId));

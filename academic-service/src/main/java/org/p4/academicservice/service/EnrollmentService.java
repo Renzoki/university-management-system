@@ -43,6 +43,14 @@ public interface EnrollmentService {
     void dropEnrollment(UUID studentId, UUID enrollmentId);
 
     /**
+     * Completes the specified enrollment for the specified student.
+     *
+     * @param studentId the unique identifier of the student
+     * @param enrollmentId the unique identifier of the enrollment to drop
+     */
+    void completeEnrollment(UUID studentId, UUID enrollmentId);
+
+    /**
      * Permanently deletes an enrollment.
      *
      * @param enrollmentId the unique identifier of the enrollment to delete

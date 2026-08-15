@@ -5,8 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { decodeToken } from "@/utils/jwt";
 import { seedAcademicData } from "@/api/auth/seedApi";
 
-const SEED_STORAGE_KEY = "academic-data-seeded";
-
 export default function LoginPage() {
   const navigate = useNavigate();
   const { loginWithToken } = useAuth();
@@ -16,14 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const [isSeeding, setIsSeeding] = useState(false);
-  const [isSeeded, setIsSeeded] = useState(
-    localStorage.getItem(SEED_STORAGE_KEY) === "true"
-  );
-  const [seedMessage, setSeedMessage] = useState(
-    localStorage.getItem(SEED_STORAGE_KEY) === "true"
-      ? "Academic data has already been seeded."
-      : ""
-  );
+  const [seedMessage, setSeedMessage] = useState("");
   const [seedError, setSeedError] = useState("");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -51,7 +42,7 @@ export default function LoginPage() {
   }
 
   async function handleSeed() {
-    if (isSeeded || isSeeding) {
+    if (isSeeding) {
       return;
     }
 
@@ -61,9 +52,6 @@ export default function LoginPage() {
 
     try {
       const message = await seedAcademicData();
-
-      localStorage.setItem(SEED_STORAGE_KEY, "true");
-      setIsSeeded(true);
       setSeedMessage(message);
     } catch (error) {
       console.error("SEED ERROR:", error);
@@ -149,14 +137,10 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleSeed}
-            disabled={isSeeding || isSeeded}
+            disabled={isSeeding}
             className="mt-6 w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSeeding
-              ? "Seeding..."
-              : isSeeded
-                ? "Academic Data Already Seeded"
-                : "Seed Academic Data"}
+            {isSeeding ? "Seeding..." : "Seed Academic Data"}
           </button>
 
           {seedMessage && (
@@ -196,6 +180,7 @@ export default function LoginPage() {
               <div className="mt-1 space-y-1 text-muted-foreground">
                 <p>john.smith@dlsu.edu.ph / password123</p>
                 <p>maria.santos@dlsu.edu.ph / password123</p>
+                <p>james.tan@dlsu.edu.ph / password123</p>
               </div>
             </div>
 

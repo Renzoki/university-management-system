@@ -16,6 +16,17 @@
 | Build Tool | Maven                       |
 | API        | REST                        |
 
+### Prerequisites
+
+You must have the following installed on your device:
+```text
+Java JDK 
+Maven 
+Node.js 
+npm 
+Docker Desktop (installed and running)
+```
+
 ### Ports
 
 ```text

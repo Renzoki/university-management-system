@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="auth.js"></script>
+  <script>auth.requireRole(["STUDENT"]);</script>
+</head>
+<body>
+  <div class="navbar">
+    <span class="brand">Academic Portal</span>
+    <nav>
+      <a href="student-dashboard.html" class="active">Dashboard</a>
+      <a href="student-courses.html">Browse Courses</a>
+      <a href="student-enrollments.html">My Enrollments</a>
+      <a href="student-grades.html">My Grades</a>
+      <a href="#" id="logout-link">Log out</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1>Welcome back</h1>
+    <p class="subtitle" id="welcome-subtitle">Student overview</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>Browse Courses</h3>
+        <p class="meta">Explore available courses and enroll.</p>
+        <a href="student-courses.html" class="btn btn-secondary btn-sm">Browse</a>
+      </div>
+      <div class="card">
+        <h3>My Enrollments</h3>
+        <p class="meta">View and manage the courses you're enrolled in.</p>
+        <a href="student-enrollments.html" class="btn btn-secondary btn-sm">View</a>
+      </div>
+      <div class="card">
+        <h3>My Grades</h3>
+        <p class="meta">Check grades for your enrolled courses.</p>
+        <a href="student-grades.html" class="btn btn-secondary btn-sm">View</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.logout();
+    });
+
+    (async () => {
+      try {
+        const student = await api.getStudentSelf();
+        document.getElementById("welcome-subtitle").textContent =
+          `${student.firstName} ${student.lastName} · ${student.email}`;
+      } catch {
+        // Non-fatal
+      }
+    })();
+  </script>
+</body>
+</html>

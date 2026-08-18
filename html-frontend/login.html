@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — Academic Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="center-page" style="flex-direction: column; gap: 24px;">
+    <div class="card auth-card">
+      <h1>Sign in</h1>
+      <p class="subtitle">Academic Portal</p>
+
+      <div id="error" class="error-message"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required autocomplete="current-password" />
+        </div>
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-block">Sign in</button>
+      </form>
+    </div>
+
+    <div class="card" style="width: 100%; max-width: 560px;">
+      <h2>Demo accounts</h2>
+      <p class="text-muted" style="font-size: 13px; margin: 0 0 16px;">Seeded for local testing only.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th>Courses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Renz Tabuzo</td>
+            <td>admin@example.com</td>
+            <td>admin123</td>
+            <td><span class="badge badge-neutral">ADMIN</span></td>
+            <td class="text-muted">—</td>
+          </tr>
+          <tr>
+            <td>John Smith</td>
+            <td>john.smith@dlsu.edu.ph</td>
+            <td>password123</td>
+            <td><span class="badge badge-neutral">FACULTY</span></td>
+            <td>CCPROG1, CSINTSY</td>
+          </tr>
+          <tr>
+            <td>Maria Santos</td>
+            <td>maria.santos@dlsu.edu.ph</td>
+            <td>password123</td>
+            <td><span class="badge badge-neutral">FACULTY</span></td>
+            <td>CSALGCM, CSNETWK</td>
+          </tr>
+          <tr>
+            <td>James Tan</td>
+            <td>james.tan@dlsu.edu.ph</td>
+            <td>password123</td>
+            <td><span class="badge badge-neutral">FACULTY</span></td>
+            <td>CCDSALG</td>
+          </tr>
+          <tr>
+            <td>Juan Dela Cruz</td>
+            <td>juan.delacruz@dlsu.edu.ph</td>
+            <td>password123</td>
+            <td><span class="badge badge-neutral">STUDENT</span></td>
+            <td>CCPROG1, CSALGCM, CSINTSY</td>
+          </tr>
+          <tr>
+            <td>Ana Reyes</td>
+            <td>ana.reyes@dlsu.edu.ph</td>
+            <td>password123</td>
+            <td><span class="badge badge-neutral">STUDENT</span></td>
+            <td>CCPROG1, CCDSALG, CSINTSY</td>
+          </tr>
+          <tr>
+            <td>Miguel Garcia</td>
+            <td>miguel.garcia@dlsu.edu.ph</td>
+            <td>password123</td>
+            <td><span class="badge badge-neutral">STUDENT</span></td>
+            <td class="text-muted">Not enrolled</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mt-16" style="display:flex; align-items:center; gap:12px;">
+        <button id="seed-btn" class="btn btn-secondary btn-sm">Seed academic data</button>
+        <span id="seed-status" style="font-size:13px;"></span>
+      </div>
+      <p class="text-muted" style="font-size:12px; margin: 8px 0 0;">
+        One-time setup: creates the courses/faculty/students above in the academic service.
+        Safe to click even if already seeded — it just reports back.
+      </p>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script>
+    // If already logged in, skip straight to the right dashboard.
+    if (auth.isAuthenticated()) {
+      const role = auth.getRole();
+      if (role === "FACULTY") window.location.href = "faculty-dashboard.html";
+      else if (role === "STUDENT") window.location.href = "student-dashboard.html";
+    }
+
+    const seedBtn = document.getElementById("seed-btn");
+    const seedStatus = document.getElementById("seed-status");
+
+    seedBtn.addEventListener("click", async () => {
+      seedBtn.disabled = true;
+      seedStatus.textContent = "Seeding…";
+      seedStatus.style.color = "var(--text-muted)";
+      try {
+        const message = await api.seedAcademicData();
+        seedStatus.textContent = typeof message === "string" ? message : "Seeded successfully.";
+        seedStatus.style.color = "var(--success)";
+      } catch (err) {
+        // Backend throws IllegalStateException -> likely a 409 or 500 if already seeded.
+        seedStatus.textContent = err.message || "Already seeded, or seeding failed.";
+        seedStatus.style.color = "var(--warning)";
+      } finally {
+        seedBtn.disabled = false;
+      }
+    });
+
+    const form = document.getElementById("login-form");
+    const errorBox = document.getElementById("error");
+    const submitBtn = document.getElementById("submit-btn");
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.add("visible");
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBox.classList.remove("visible");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Signing in…";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        const { accessToken } = await api.login(email, password);
+        if (!accessToken) throw new Error("No token returned by server");
+        auth.setToken(accessToken);
+
+        const role = auth.getRole();
+        if (role === "FACULTY") {
+          window.location.href = "faculty-dashboard.html";
+        } else if (role === "STUDENT") {
+          window.location.href = "student-dashboard.html";
+        } else {
+          showError(`Unsupported role: ${role}`);
+          auth.clearToken();
+        }
+      } catch (err) {
+        showError(err.message || "Invalid email or password.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Sign in";
+      }
+    });
+  </script>
+</body>
+</html>

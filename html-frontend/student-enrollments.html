@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Enrollments — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="auth.js"></script>
+  <script>auth.requireRole(["STUDENT"]);</script>
+</head>
+<body>
+  <div class="navbar">
+    <span class="brand">Academic Portal</span>
+    <nav>
+      <a href="student-dashboard.html">Dashboard</a>
+      <a href="student-courses.html">Browse Courses</a>
+      <a href="student-enrollments.html" class="active">My Enrollments</a>
+      <a href="student-grades.html">My Grades</a>
+      <a href="#" id="logout-link">Log out</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1>My Enrollments</h1>
+    <p class="subtitle">Courses you've enrolled in</p>
+
+    <div id="error" class="error-message"></div>
+    <div class="card">
+      <table id="enrollments-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Code</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="enrollments-tbody"></tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none;">
+        You haven't enrolled in any courses yet. <a href="student-courses.html">Browse courses</a>.
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.logout();
+    });
+
+    function statusBadgeClass(status) {
+      return `badge badge-${(status || "").toLowerCase()}`;
+    }
+
+    async function handleDrop(enrollmentId, btn, statusCell, badgeSpan) {
+      if (!confirm("Drop this course?")) return;
+      btn.disabled = true;
+      btn.textContent = "Dropping…";
+      try {
+        const updated = await api.dropEnrollment(enrollmentId);
+        badgeSpan.className = statusBadgeClass(updated.status);
+        badgeSpan.textContent = updated.status;
+        btn.remove();
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Drop";
+        alert(err.message || "Failed to drop course.");
+      }
+    }
+
+    async function loadEnrollments() {
+      const errorBox = document.getElementById("error");
+      try {
+        const enrollments = await api.getMyEnrollments();
+
+        if (enrollments.length === 0) {
+          document.getElementById("empty-state").style.display = "block";
+          return;
+        }
+
+        const tbody = document.getElementById("enrollments-tbody");
+        enrollments.forEach((e) => {
+          const tr = document.createElement("tr");
+          const canDrop = e.status === "ACTIVE";
+
+          tr.innerHTML = `
+            <td>${e.course.name}</td>
+            <td>${e.course.courseCode}</td>
+            <td><span class="${statusBadgeClass(e.status)}">${e.status}</span></td>
+            <td>${canDrop ? `<button class="btn btn-danger btn-sm drop-btn">Drop</button>` : ""}</td>
+          `;
+
+          if (canDrop) {
+            const badgeSpan = tr.querySelector("td:nth-child(3) span");
+            const btn = tr.querySelector(".drop-btn");
+            btn.addEventListener("click", () => handleDrop(e.enrollmentId, btn, null, badgeSpan));
+          }
+
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("enrollments-table").style.display = "table";
+      } catch (err) {
+        errorBox.textContent = err.message || "Failed to load enrollments.";
+        errorBox.classList.add("visible");
+      }
+    }
+
+    loadEnrollments();
+  </script>
+</body>
+</html>

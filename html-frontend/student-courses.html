@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Courses — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="auth.js"></script>
+  <script>auth.requireRole(["STUDENT"]);</script>
+</head>
+<body>
+  <div class="navbar">
+    <span class="brand">Academic Portal</span>
+    <nav>
+      <a href="student-dashboard.html">Dashboard</a>
+      <a href="student-courses.html" class="active">Browse Courses</a>
+      <a href="student-enrollments.html">My Enrollments</a>
+      <a href="student-grades.html">My Grades</a>
+      <a href="#" id="logout-link">Log out</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1>Browse Courses</h1>
+    <p class="subtitle">All courses currently offered</p>
+
+    <div id="error" class="error-message"></div>
+    <div id="courses-container"><p class="text-muted">Loading courses…</p></div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.logout();
+    });
+
+    function statusBadgeClass(status) {
+      return `badge badge-${(status || "").toLowerCase()}`;
+    }
+
+    async function handleEnroll(courseId, btn) {
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = "Enrolling…";
+      try {
+        await api.enrollSelf(courseId);
+        btn.textContent = "Enrolled";
+        btn.classList.remove("btn-primary");
+        btn.classList.add("btn-secondary");
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        alert(err.message || "Failed to enroll.");
+      }
+    }
+
+    async function loadCourses() {
+      const container = document.getElementById("courses-container");
+      const errorBox = document.getElementById("error");
+
+      try {
+        const [allCourses, myEnrollments] = await Promise.all([
+          api.getCourses(),
+          api.getMyEnrollments(),
+        ]);
+
+        const enrolledCourseIds = new Set(
+          myEnrollments
+            .filter((e) => e.status === "ACTIVE" || e.status === "COMPLETED")
+            .map((e) => e.course.id)
+        );
+
+        if (allCourses.length === 0) {
+          container.innerHTML = `<div class="empty-state">No courses are available right now.</div>`;
+          return;
+        }
+
+        container.innerHTML = `<div class="card-grid">${allCourses
+          .map((c) => {
+            const already = enrolledCourseIds.has(c.id);
+            const facultyName = c.faculty ? `${c.faculty.firstName} ${c.faculty.lastName}` : "Unassigned";
+            return `
+              <div class="card">
+                <h3>${c.name}</h3>
+                <p class="meta">${c.courseCode} · ${facultyName}</p>
+                <span class="${statusBadgeClass(c.status)}">${c.status}</span>
+                <div class="mt-16">
+                  <button
+                    class="btn ${already ? "btn-secondary" : "btn-primary"} btn-sm enroll-btn"
+                    data-course-id="${c.id}"
+                    ${already ? "disabled" : ""}
+                  >${already ? "Enrolled" : "Enroll"}</button>
+                </div>
+              </div>`;
+          })
+          .join("")}</div>`;
+
+        container.querySelectorAll(".enroll-btn:not([disabled])").forEach((btn) => {
+          btn.addEventListener("click", () => handleEnroll(btn.dataset.courseId, btn));
+        });
+      } catch (err) {
+        errorBox.textContent = err.message || "Failed to load courses.";
+        errorBox.classList.add("visible");
+        container.innerHTML = "";
+      }
+    }
+
+    loadCourses();
+  </script>
+</body>
+</html>

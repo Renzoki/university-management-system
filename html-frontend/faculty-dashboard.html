@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="auth.js"></script>
+  <script>auth.requireRole(["FACULTY"]);</script>
+</head>
+<body>
+  <div class="navbar">
+    <span class="brand">Academic Portal</span>
+    <nav>
+      <a href="faculty-dashboard.html" class="active">Dashboard</a>
+      <a href="faculty-courses.html">My Courses</a>
+      <a href="#" id="logout-link">Log out</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1>Welcome back</h1>
+    <p class="subtitle" id="welcome-subtitle">Faculty overview</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>My Courses</h3>
+        <p class="meta">View the courses you teach and their enrolled students.</p>
+        <a href="faculty-courses.html" class="btn btn-secondary btn-sm">Go to My Courses</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.logout();
+    });
+
+    (async () => {
+      try {
+        const faculty = await api.getFacultySelf();
+        document.getElementById("welcome-subtitle").textContent =
+          `${faculty.firstName} ${faculty.lastName} · ${faculty.email}`;
+      } catch {
+        // Non-fatal — leave the default subtitle in place.
+      }
+    })();
+  </script>
+</body>
+</html>

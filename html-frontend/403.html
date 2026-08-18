@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Access denied — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="center-page">
+    <div class="card auth-card" style="text-align:center;">
+      <h1>403</h1>
+      <p class="subtitle">You don't have access to that page.</p>
+      <a href="login.html" class="btn btn-primary" id="home-link">Back to sign in</a>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    // If logged in, send them somewhere useful instead of login.
+    if (auth.isAuthenticated()) {
+      const role = auth.getRole();
+      const link = document.getElementById("home-link");
+      if (role === "FACULTY") {
+        link.href = "faculty-dashboard.html";
+        link.textContent = "Back to dashboard";
+      } else if (role === "STUDENT") {
+        link.href = "student-dashboard.html";
+        link.textContent = "Back to dashboard";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Detail — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="auth.js"></script>
+  <script>auth.requireRole(["FACULTY"]);</script>
+</head>
+<body>
+  <div class="navbar">
+    <span class="brand">Academic Portal</span>
+    <nav>
+      <a href="faculty-dashboard.html">Dashboard</a>
+      <a href="faculty-courses.html" class="active">My Courses</a>
+      <a href="#" id="logout-link">Log out</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <a href="faculty-courses.html" class="text-muted">&larr; Back to My Courses</a>
+    <h1 id="course-title" class="mt-16">Loading…</h1>
+    <p class="subtitle" id="course-subtitle"></p>
+
+    <div id="error" class="error-message"></div>
+
+    <div class="card">
+      <h2>Enrolled Students</h2>
+      <table id="students-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Grade</th>
+            <th>Set Grade</th>
+          </tr>
+        </thead>
+        <tbody id="students-tbody"></tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none;">No students enrolled in this course yet.</div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.logout();
+    });
+
+    console.log("DEBUG href:", window.location.href);
+    console.log("DEBUG search:", window.location.search);
+    const params = new URLSearchParams(window.location.search);
+    const courseId = params.get("courseId");
+    console.log("DEBUG courseId:", courseId);
+
+    if (!courseId || courseId === "null" || courseId === "undefined") {
+      window.location.href = "404.html";
+      throw new Error("Missing courseId — redirecting to 404.");
+    }
+
+    function statusBadgeClass(status) {
+      return `badge badge-${(status || "").toLowerCase()}`;
+    }
+
+    async function submitGrade(enrollmentId, inputEl, statusEl) {
+      const raw = parseFloat(inputEl.value);
+      if (isNaN(raw) || raw < 0 || raw > 100) {
+        statusEl.textContent = "Enter 0–100";
+        statusEl.style.color = "var(--danger)";
+        return;
+      }
+      statusEl.textContent = "Saving…";
+      statusEl.style.color = "var(--text-muted)";
+      try {
+        const updated = await api.setGrade(enrollmentId, raw);
+        statusEl.textContent = `Saved (${updated.gradeEquivalent})`;
+        statusEl.style.color = "var(--success)";
+      } catch (err) {
+        statusEl.textContent = err.message || "Failed to save";
+        statusEl.style.color = "var(--danger)";
+      }
+    }
+
+    function renderRow(enrollment) {
+      const s = enrollment.student;
+      const g = enrollment.grade;
+      const gradeText = g ? `${g.rawGrade} (${g.gradeEquivalent})` : "—";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${s.firstName} ${s.lastName}</td>
+        <td>${s.email}</td>
+        <td><span class="${statusBadgeClass(enrollment.status)}">${enrollment.status}</span></td>
+        <td class="current-grade">${gradeText}</td>
+        <td>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <input type="number" min="0" max="100" step="0.01" placeholder="0-100" style="width:90px; padding:6px 8px;" class="grade-input" />
+            <button class="btn btn-primary btn-sm grade-save-btn">Save</button>
+            <span class="grade-status" style="font-size:12px;"></span>
+          </div>
+        </td>
+      `;
+
+      const input = tr.querySelector(".grade-input");
+      const saveBtn = tr.querySelector(".grade-save-btn");
+      const statusEl = tr.querySelector(".grade-status");
+      const gradeCell = tr.querySelector(".current-grade");
+
+      if (g) input.value = g.rawGrade;
+
+      saveBtn.addEventListener("click", async () => {
+        await submitGrade(enrollment.enrollmentId, input, statusEl);
+        // Refresh the displayed grade after a successful save.
+        try {
+          const refreshed = await api.getGrade(s.id, courseId);
+          gradeCell.textContent = `${refreshed.rawGrade} (${refreshed.gradeEquivalent})`;
+        } catch {
+          /* leave as-is if refresh fails */
+        }
+      });
+
+      return tr;
+    }
+
+    async function loadCourseDetail() {
+      const errorBox = document.getElementById("error");
+      try {
+        const course = await api.getCourseById(courseId);
+        document.getElementById("course-title").textContent = course.name;
+        document.getElementById("course-subtitle").textContent =
+          `${course.courseCode} · ${course.status}`;
+
+        const enrollments = await api.getEnrollmentsByCourse(courseId);
+
+        if (enrollments.length === 0) {
+          document.getElementById("empty-state").style.display = "block";
+          return;
+        }
+
+        const tbody = document.getElementById("students-tbody");
+        enrollments.forEach((e) => tbody.appendChild(renderRow(e)));
+        document.getElementById("students-table").style.display = "table";
+      } catch (err) {
+        errorBox.textContent = err.message || "Failed to load course.";
+        errorBox.classList.add("visible");
+      }
+    }
+
+    loadCourseDetail();
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Grades — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="auth.js"></script>
+  <script>auth.requireRole(["STUDENT"]);</script>
+</head>
+<body>
+  <div class="navbar">
+    <span class="brand">Academic Portal</span>
+    <nav>
+      <a href="student-dashboard.html">Dashboard</a>
+      <a href="student-courses.html">Browse Courses</a>
+      <a href="student-enrollments.html">My Enrollments</a>
+      <a href="student-grades.html" class="active">My Grades</a>
+      <a href="#" id="logout-link">Log out</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1>My Grades</h1>
+    <p class="subtitle">Grades for your enrolled courses</p>
+
+    <div id="error" class="error-message"></div>
+    <div class="card">
+      <table id="grades-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Code</th>
+            <th>Raw Grade</th>
+            <th>Grade Equivalent</th>
+          </tr>
+        </thead>
+        <tbody id="grades-tbody"></tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none;">
+        You have no enrolled courses to show grades for.
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.logout();
+    });
+
+    async function loadGrades() {
+      const errorBox = document.getElementById("error");
+      try {
+        const enrollments = await api.getMyEnrollments();
+        // Only ACTIVE/COMPLETED enrollments meaningfully have grades.
+        const relevant = enrollments.filter((e) => e.status !== "DROPPED");
+
+        if (relevant.length === 0) {
+          document.getElementById("empty-state").style.display = "block";
+          return;
+        }
+
+        const tbody = document.getElementById("grades-tbody");
+
+        // Fetch each course's grade via GET /grades/self/{courseId}.
+        const rows = await Promise.all(
+          relevant.map(async (e) => {
+            try {
+              const grade = await api.getMyGrade(e.course.id);
+              return { course: e.course, grade };
+            } catch {
+              return { course: e.course, grade: null };
+            }
+          })
+        );
+
+        rows.forEach(({ course, grade }) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${course.name}</td>
+            <td>${course.courseCode}</td>
+            <td>${grade ? grade.rawGrade : "—"}</td>
+            <td>${grade ? grade.gradeEquivalent : "—"}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("grades-table").style.display = "table";
+      } catch (err) {
+        errorBox.textContent = err.message || "Failed to load grades.";
+        errorBox.classList.add("visible");
+      }
+    }
+
+    loadGrades();
+  </script>
+</body>
+</html>

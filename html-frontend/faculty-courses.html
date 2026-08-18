@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Courses — Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="auth.js"></script>
+  <script>auth.requireRole(["FACULTY"]);</script>
+</head>
+<body>
+  <div class="navbar">
+    <span class="brand">Academic Portal</span>
+    <nav>
+      <a href="faculty-dashboard.html">Dashboard</a>
+      <a href="faculty-courses.html" class="active">My Courses</a>
+      <a href="#" id="logout-link">Log out</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <h1>My Courses</h1>
+    <p class="subtitle">Courses you're assigned to teach</p>
+
+    <div id="error" class="error-message"></div>
+    <div id="courses-container">
+      <p class="text-muted">Loading courses…</p>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.logout();
+    });
+
+    function statusBadgeClass(status) {
+      return `badge badge-${(status || "").toLowerCase()}` || "badge badge-neutral";
+    }
+
+    async function loadMyCourses() {
+      const container = document.getElementById("courses-container");
+      const errorBox = document.getElementById("error");
+
+      try {
+        const [allCourses, myFacultyProfile] = await Promise.all([
+          api.getCourses(),
+          api.getFacultySelf(),
+        ]);
+
+        // Filter client-side: GET /courses is unfiltered (backend has no
+        // "my assigned courses" endpoint). Match on faculty.id, using
+        // /faculty/self as the source of truth for "my" id rather than
+        // the JWT sub, in case they ever diverge.
+        const myId = myFacultyProfile.id;
+        const myCourses = allCourses.filter((c) => c.faculty && c.faculty.id === myId);
+
+        if (myCourses.length === 0) {
+          container.innerHTML = `<div class="empty-state">You're not assigned to any courses yet.</div>`;
+          return;
+        }
+
+        container.innerHTML = `<div class="card-grid">${myCourses
+          .map(
+            (c) => `
+          <div class="card">
+            <h3>${c.name}</h3>
+            <p class="meta">${c.courseCode}</p>
+            <span class="${statusBadgeClass(c.status)}">${c.status}</span>
+            <div class="mt-16">
+              <a href="faculty-course-detail.html?courseId=${c.id}" class="btn btn-secondary btn-sm">View students</a>
+            </div>
+          </div>`
+          )
+          .join("")}</div>`;
+      } catch (err) {
+        errorBox.textContent = err.message || "Failed to load courses.";
+        errorBox.classList.add("visible");
+        container.innerHTML = "";
+      }
+    }
+
+    loadMyCourses();
+  </script>
+</body>
+</html>

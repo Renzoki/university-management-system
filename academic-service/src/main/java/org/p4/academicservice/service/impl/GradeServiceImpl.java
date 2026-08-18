@@ -62,7 +62,8 @@ public class GradeServiceImpl implements GradeService {
             grade.setRawGrade(request.rawGrade());
             grade.setGradeEquivalent(gradeEquivalent);
         }
-
+        enrollment.setStatus(EnrollmentStatus.COMPLETED);
+        enrollmentRepository.save(enrollment);
         return gradeRepository.save(grade);
     }
 
@@ -91,7 +92,7 @@ public class GradeServiceImpl implements GradeService {
     }
 
     private void validateSystemStates(Enrollment enrollment) {
-        if (enrollment.getStatus() != EnrollmentStatus.ACTIVE) {
+        if (enrollment.getStatus() == EnrollmentStatus.DROPPED) {
             throw new EnrollmentNotActiveException(enrollment.getId());
         }
 

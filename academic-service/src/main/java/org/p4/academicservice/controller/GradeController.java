@@ -82,11 +82,7 @@ public class GradeController {
             @PathVariable UUID enrollmentId,
             @Valid @RequestBody SetGradeRequest request){
         Grade grade = gradeService.setGrade(employee.id(), enrollmentId, employee.role(), request);
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", enrollmentId));
         GradeDTO response = mapper.toDto(grade);
-        enrollment.setStatus(EnrollmentStatus.COMPLETED);
-        enrollmentRepository.save(enrollment);
         return ResponseEntity.ok(response);
     }
 }

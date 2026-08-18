@@ -14,6 +14,7 @@ import org.p4.academicservice.repository.EnrollmentRepository;
 import org.p4.academicservice.repository.GradeRepository;
 import org.p4.academicservice.service.GradeService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -45,26 +46,29 @@ public class GradeServiceImpl implements GradeService {
         return enrollment.getGrade();
     }
 
+    @Transactional
     @Override
     public Grade setGrade(UUID employeeId, UUID enrollmentId, UserRole role, SetGradeRequest request) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new  ResourceNotFoundException("Enrollment", "id", enrollmentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", enrollmentId));
 
         validateSystemStates(enrollment);
         validateFacultyAssignment(employeeId, enrollment, role);
+
         double gradeEquivalent = calculateGradeEquivalent(request.rawGrade());
         Grade grade = enrollment.getGrade();
 
-        if(grade == null){
+        if (grade == null) {
             grade = new Grade(request.rawGrade(), enrollment);
             grade.setGradeEquivalent(gradeEquivalent);
         } else {
             grade.setRawGrade(request.rawGrade());
             grade.setGradeEquivalent(gradeEquivalent);
         }
+
         enrollment.setStatus(EnrollmentStatus.COMPLETED);
-        enrollmentRepository.save(enrollment);
-        return gradeRepository.save(grade);
+
+        return grade;
     }
 
     private Enrollment fetchAndValidateEnrollment(UUID studentId, UUID courseId) {
@@ -86,7 +90,10 @@ public class GradeServiceImpl implements GradeService {
 
         if(role == UserRole.FACULTY){
             if(!actorId.equals(facultyId)){
-                throw new FacultyNotAssignedToCourseException(actorId, enrollment.getCourse().getCourseCode());
+                throw new FacultyNotAssignedToCourseException(
+                        actorId,
+                        enrollment.getCourse().getCourseCode()
+                );
             }
         }
     }
@@ -116,4 +123,3 @@ public class GradeServiceImpl implements GradeService {
         return 4.0;
     }
 }
-

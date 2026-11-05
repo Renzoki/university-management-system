@@ -25,6 +25,7 @@ public class AuthController {
         this.authService = authService;
         this.logService = logService;
     }
+
     
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> handleLogin(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request){

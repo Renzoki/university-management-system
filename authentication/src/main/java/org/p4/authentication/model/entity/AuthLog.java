@@ -27,7 +27,7 @@ public class AuthLog {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action_status", nullable = false, updatable = false)
-    private ActionStatus actionStatus;
+    private ActionStatus status;
 
     @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp;
@@ -40,11 +40,11 @@ public class AuthLog {
     }
     public AuthLog() {}
 
-    public AuthLog(String userIdentifier, String userIp, Action action, ActionStatus actionStatus) {
+    public AuthLog(String userIdentifier, String userIp, Action action) {
         this.userIdentifier = userIdentifier;
         this.userIp = userIp;
         this.action = action;
-        this.actionStatus = actionStatus;
+        this.status = ActionStatus.FAILURE;
     }
 
     public UUID getId() {
@@ -63,8 +63,12 @@ public class AuthLog {
         return action;
     }
 
-    public ActionStatus getActionStatus() {
-        return actionStatus;
+    public ActionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ActionStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getTimestamp() {

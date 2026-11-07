@@ -17,9 +17,8 @@ import org.p4.authentication.model.dto.LoginRequest;
 import org.p4.authentication.model.dto.LoginResponse;
 import org.p4.authentication.service.AuthService;
 
-
 @RestController
-    @RequestMapping("/auth")
+@RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
     private final AuthLogService logService;
@@ -57,7 +56,7 @@ public class AuthController {
             HttpServletRequest request
     ){
         AuthLog log = logService.logEvent(user.email(), request.getRemoteAddr(), user.role(), Action.SUBMIT_SECURITY_QUESTION);
-        userService.saveAuthenticationQuestionAnswers(user.email(), verificationQuestionsRequest);
+        userService.saveAuthenticationQuestionAnswers(user.id(), verificationQuestionsRequest);
         logService.markAsSuccessful(log);
         return ResponseEntity.noContent().build();
     }

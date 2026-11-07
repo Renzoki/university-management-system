@@ -5,9 +5,11 @@ import org.p4.authentication.model.dto.VerificationQuestionsRequest;
 import org.p4.authentication.model.entity.SecurityQuestionAnswer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.p4.authentication.exception.ResourceNotFoundException;
+import org.p4.authentication.exception.UserNotFoundException;
 import org.p4.authentication.model.entity.User;
 import org.p4.authentication.repository.UserRepository;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -19,8 +21,8 @@ public class UserService {
         this.encoder = encoder;
     }
 
-    public void saveAuthenticationQuestionAnswers(String userEmail, VerificationQuestionsRequest request){
-        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("User", "email", userEmail));
+    public void saveAuthenticationQuestionAnswers(UUID userId, VerificationQuestionsRequest request){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
         for(QuestionAnswerPair s : request.QuestionsAndAnswers()){
             String cleanedAnswer = s.answer().trim().toLowerCase();

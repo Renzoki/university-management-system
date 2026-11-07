@@ -1,7 +1,9 @@
 package org.p4.authentication.service;
 
 import io.jsonwebtoken.Claims;
+import org.p4.authentication.exception.UserNotFoundException;
 import org.p4.authentication.model.entity.UserStatus;
+import org.p4.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Jwts;
@@ -25,17 +27,25 @@ public class JwtService {
     @Value("${expiration.hours}")
     private Duration expiration;
 
+    private final UserRepository userRepository;
+
+    public JwtService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+
     public String generateToken(User user) {
         UUID sub = user.getId();
         UserRole role = user.getRole();
         String email = user.getEmail();
         UserStatus status = user.getStatus();
+        Long tokenVersion = user.getTokenVersion();
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(sub.toString())
                 .claim("role", role.name())
                 .claim("email", email)
                 .claim("status", status)
+                .claim("tokenVersion", tokenVersion)
                 .issuedAt(
                         Date.from(now)
                 )
@@ -78,6 +88,13 @@ public class JwtService {
         return UserRole.valueOf(role);
     }
 
+    public boolean isTokenVersionValid(String token){
+        UUID userId = extractUserId(token);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Long tokenVersion = extractAllClaims(token).get("tokenVersion", Long.class);
+        return tokenVersion.equals(user.getTokenVersion());
+    }
+
     public boolean isTokenExpired(String token) {
         Date expiry = extractAllClaims(token).getExpiration();
         Date now = new Date();
@@ -87,7 +104,9 @@ public class JwtService {
     public boolean isTokenValid(String token) {
         try {
             extractAllClaims(token);
-            return !isTokenExpired(token) && extractStatus(token) != UserStatus.SUSPENDED ;
+            return !isTokenExpired(token) &&
+                    isTokenVersionValid(token) &&
+                    extractStatus(token) != UserStatus.SUSPENDED;
         } catch (Exception e) {
             return false;
         }

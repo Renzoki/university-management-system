@@ -42,6 +42,9 @@ public class User {
     @Column(name = "status", nullable = false)
     private UserStatus status;
 
+    @Column(name = "token_version", nullable = false)
+    private Long tokenVersion;
+
     @Column(name = "created", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -55,6 +58,7 @@ public class User {
         this.role = role;
         this.status = status;
         this.createdAt = createdAt;
+        this.tokenVersion = 0L;
         this.verificationQuestions = new ArrayList<>(5);
     }
 
@@ -108,6 +112,14 @@ public class User {
 
     public List<SecurityQuestionAnswer> getVerificationQuestions() {
         return verificationQuestions;
+    }
+
+    public Long getTokenVersion() {
+        return tokenVersion;
+    }
+
+    public void incrementTokenVersion() {
+        this.tokenVersion += 1;
     }
 
     public void setVerificationQuestions(List<SecurityQuestionAnswer> verificationQuestions) {

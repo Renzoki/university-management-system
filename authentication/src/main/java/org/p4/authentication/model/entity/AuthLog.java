@@ -21,6 +21,9 @@ public class AuthLog {
     @Column(name = "user_ip", nullable = false, updatable = false)
     private String userIp;
 
+    @Column(name = "user_role", updatable = false)
+    private UserRole userRole;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false, updatable = false)
     private Action action;
@@ -40,10 +43,16 @@ public class AuthLog {
     }
     public AuthLog() {}
 
+    public AuthLog(String userIdentifier, String userIp, UserRole role, Action action) {
+        this.userRole = role;
+        this(userIdentifier, userIp, action);
+    }
+
     public AuthLog(String userIdentifier, String userIp, Action action) {
         this.userIdentifier = userIdentifier;
         this.userIp = userIp;
         this.action = action;
+        this.userRole = UserRole.UNAUTHENTICATED;
         this.status = ActionStatus.FAILURE;
     }
 
@@ -57,6 +66,14 @@ public class AuthLog {
 
     public String getUserIp() {
         return userIp;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 
     public Action getAction() {

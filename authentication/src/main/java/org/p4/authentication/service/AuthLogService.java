@@ -3,6 +3,7 @@ package org.p4.authentication.service;
 import org.p4.authentication.model.entity.Action;
 import org.p4.authentication.model.entity.ActionStatus;
 import org.p4.authentication.model.entity.AuthLog;
+import org.p4.authentication.model.entity.UserRole;
 import org.p4.authentication.repository.AuthLogRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,13 @@ public class AuthLogService {
         this.repository = repository;
     }
 
+
     public AuthLog logEvent(String userIdentifier, String userIp, Action action){
         return repository.save(new AuthLog(userIdentifier, userIp, action));
+    }
+
+    public AuthLog logEvent(String userIdentifier, String userIp, UserRole userRole, Action action){
+        return repository.save(new AuthLog(userIdentifier, userIp, userRole, action));
     }
 
     public void markAsSuccessful(AuthLog log){

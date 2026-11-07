@@ -2,12 +2,12 @@ package org.p4.authentication.model.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.Size;
 
 public record LoginRequest(
         @Email(message = INVALID_EMAIL)
         @NotBlank(message = BLANK_EMAIL)
-        @Length(max = 255, message = EMAIL_LENGTH)
+        @Size(max = 255, message = EMAIL_LENGTH)
         String email,
 
         @NotBlank(message = BLANK_PASSWORD)

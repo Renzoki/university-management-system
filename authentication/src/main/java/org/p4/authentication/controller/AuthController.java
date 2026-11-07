@@ -7,7 +7,6 @@ import org.p4.authentication.model.entity.Action;
 import org.p4.authentication.model.entity.AuthLog;
 import org.p4.authentication.model.entity.SecurityQuestion;
 import org.p4.authentication.service.AuthLogService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,6 @@ import org.p4.authentication.model.dto.LoginRequest;
 import org.p4.authentication.model.dto.LoginResponse;
 import org.p4.authentication.service.AuthService;
 
-import java.util.List;
 
 @RestController
     @RequestMapping("/auth")
@@ -37,7 +35,12 @@ public class AuthController {
     }
 
     @GetMapping("/security-questions")
-    public ResponseEntity<SecurityQuestionsResponse> getSecurityQuestions(@AuthenticationPrincipal AuthenticatedUser user){
-        return ResponseEntity.ok(new SecurityQuestionsResponse(SecurityQuestion.values()));
+    public ResponseEntity<SecurityQuestionsResponse> getSecurityQuestions(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            HttpServletRequest request){
+        AuthLog log = logService.logEvent(user.email(), request.getRemoteAddr(), user.role(), Action.GET_QUESTIONS);
+        SecurityQuestionsResponse response = new SecurityQuestionsResponse(SecurityQuestion.values());
+        logService.markAsSuccessful(log);
+        return ResponseEntity.ok(response);
     }
 }

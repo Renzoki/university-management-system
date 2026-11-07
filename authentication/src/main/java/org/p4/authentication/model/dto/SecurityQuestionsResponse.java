@@ -1,4 +1,4 @@
-package org.p4.authentication.controller;
+package org.p4.authentication.model.dto;
 
 import org.p4.authentication.model.entity.SecurityQuestion;
 

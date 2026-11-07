@@ -3,6 +3,8 @@ package org.p4.authentication.model.entity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -32,6 +34,10 @@ public class User {
     @Column(name = "role", nullable = false)
     private UserRole role;
 
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private List<SecurityQuestionAnswer> verificationQuestions;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private UserStatus status;
@@ -49,6 +55,7 @@ public class User {
         this.role = role;
         this.status = status;
         this.createdAt = createdAt;
+        this.verificationQuestions = new ArrayList<>(5);
     }
 
     public UUID getId() {
@@ -97,6 +104,22 @@ public class User {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public List<SecurityQuestionAnswer> getVerificationQuestions() {
+        return verificationQuestions;
+    }
+
+    public void setVerificationQuestions(List<SecurityQuestionAnswer> verificationQuestions) {
+        this.verificationQuestions = verificationQuestions;
+    }
+
+    public void addVerificationQuestion(SecurityQuestionAnswer securityQuestionAnswer) {
+        this.verificationQuestions.add(securityQuestionAnswer);
+    }
+
+    public void removeVerificationQuestion(SecurityQuestionAnswer securityQuestionAnswer) {
+        this.verificationQuestions.remove(securityQuestionAnswer);
     }
 
     public UserStatus getStatus() {

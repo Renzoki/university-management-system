@@ -1,0 +1,17 @@
+package org.p4.academicservice.model.entity.enums;
+
+public enum Action {
+    ADD_COURSE,
+    UPDATE_COURSE,
+    ASSIGN_FACULTY_TO_COURSE,
+    DELETE_COURSE,
+    ADD_ENROLLMENT,
+    DROP_ENROLLMENT,
+    DELETE_ENROLLMENT,
+    SET_GRADE,
+    ADD_FACULTY,
+    UPDATE_FACULTY,
+    DELETE_FACULTY,
+    UPDATE_STUDENT,
+    DELETE_STUDENT
+}

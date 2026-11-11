@@ -6,9 +6,9 @@ import org.p4.authentication.configuration.AuthenticatedUser;
 import org.p4.authentication.model.dto.SecurityQuestionsResponse;
 import org.p4.authentication.model.dto.VerificationQuestionsRequest;
 import org.p4.authentication.model.entity.Action;
-import org.p4.authentication.model.entity.AuthLog;
+import org.p4.authentication.model.entity.EventLog;
 import org.p4.authentication.model.entity.SecurityQuestion;
-import org.p4.authentication.service.AuthLogService;
+import org.p4.authentication.service.EventLogService;
 import org.p4.authentication.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,10 +21,10 @@ import org.p4.authentication.service.AuthService;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-    private final AuthLogService logService;
+    private final EventLogService logService;
     private final UserService userService;
 
-    public AuthController(AuthService authService, AuthLogService logService, UserService userService){
+    public AuthController(AuthService authService, EventLogService logService, UserService userService){
         this.authService = authService;
         this.logService = logService;
         this.userService = userService;
@@ -32,7 +32,7 @@ public class AuthController {
     
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> handleLogin(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request){
-        AuthLog log = logService.logEvent(loginRequest.email(), request.getRemoteAddr(), Action.LOGIN);
+        EventLog log = logService.logEvent(loginRequest.email(), request.getRemoteAddr(), Action.LOGIN);
         String accessToken = authService.authenticateUser(loginRequest);
         logService.markAsSuccessful(log);
         return ResponseEntity.ok(new LoginResponse(accessToken));
@@ -43,7 +43,7 @@ public class AuthController {
             @AuthenticationPrincipal AuthenticatedUser user,
             HttpServletRequest request
     ){
-        AuthLog log = logService.logEvent(user.email(), request.getRemoteAddr(), user.role(), Action.GET_QUESTIONS);
+        EventLog log = logService.logEvent(user.email(), request.getRemoteAddr(), user.role(), Action.GET_QUESTIONS);
         SecurityQuestionsResponse response = new SecurityQuestionsResponse(SecurityQuestion.values());
         logService.markAsSuccessful(log);
         return ResponseEntity.ok(response);
@@ -55,7 +55,7 @@ public class AuthController {
             @Valid @RequestBody VerificationQuestionsRequest verificationQuestionsRequest,
             HttpServletRequest request
     ){
-        AuthLog log = logService.logEvent(user.email(), request.getRemoteAddr(), user.role(), Action.SUBMIT_SECURITY_QUESTION);
+        EventLog log = logService.logEvent(user.email(), request.getRemoteAddr(), user.role(), Action.SUBMIT_SECURITY_QUESTION);
         userService.saveAuthenticationQuestionAnswers(user.id(), verificationQuestionsRequest);
         logService.markAsSuccessful(log);
         return ResponseEntity.noContent().build();

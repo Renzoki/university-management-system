@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "auth_logs")
-public class AuthLog {
+public class EventLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,17 +41,18 @@ public class AuthLog {
             this.timestamp = LocalDateTime.now();
         }
     }
-    public AuthLog() {}
+    public EventLog() {}
 
-    public AuthLog(String userIdentifier, String userIp, UserRole role, Action action) {
+    public EventLog(String userIdentifier, String userIp, UserRole role, Action action, LocalDateTime timeStamp) {
         this.userRole = role;
-        this(userIdentifier, userIp, action);
+        this(userIdentifier, userIp, action, timeStamp);
     }
 
-    public AuthLog(String userIdentifier, String userIp, Action action) {
+    public EventLog(String userIdentifier, String userIp, Action action, LocalDateTime timeStamp) {
         this.userIdentifier = userIdentifier;
         this.userIp = userIp;
         this.action = action;
+        this.timestamp = timeStamp;
         this.userRole = UserRole.UNAUTHENTICATED;
         this.status = ActionStatus.FAILURE;
     }
@@ -95,8 +96,8 @@ public class AuthLog {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        AuthLog authLog = (AuthLog) o;
-        return Objects.equals(id, authLog.id);
+        EventLog eventLog = (EventLog) o;
+        return Objects.equals(id, eventLog.id);
     }
 
     @Override

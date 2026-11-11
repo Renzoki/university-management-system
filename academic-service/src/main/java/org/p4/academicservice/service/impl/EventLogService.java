@@ -18,10 +18,10 @@ public class EventLogService {
         this.repository = repository;
     }
 
-    public EventLog logEvent(String actorIdentifier, String actorIp, UserRole actorRole, Action action,
-                             UUID personId, UUID personRole){
+    public EventLog logEvent(UUID actorId, String actorIp, UserRole actorRole, Action action,
+                             UUID personId, UserRole personRole){
         LocalDateTime timeStamp = LocalDateTime.now();
-        EventLog log = new EventLog(actorIdentifier, actorIp, actorRole, action, personId, personRole, timeStamp);
+        EventLog log = new EventLog(actorId, actorIp, actorRole, action, personId, personRole, timeStamp);
         return repository.save(log);
     }
 

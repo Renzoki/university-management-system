@@ -14,7 +14,7 @@ import java.util.UUID;
 public class EventLog extends BaseEntity {
 
     @Column(name = "actor_identifier", nullable = false, updatable = false)
-    private String actorIdentifier;
+    private UUID actorId;
 
     @Column(name = "actor_ip", nullable = false, updatable = false)
     private String actorIp;
@@ -26,11 +26,12 @@ public class EventLog extends BaseEntity {
     @Column(name = "action", nullable = false, updatable = false)
     private Action action;
 
-    @Column(name = "person_rd", nullable = false, updatable = false)
+    @Column(name = "person_id", updatable = false)
     private UUID personId;
 
-    @Column(name = "person_role", nullable = false, updatable = false)
-    private UUID personRole;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "person_role", updatable = false)
+    private UserRole personRole;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action_status", nullable = false, updatable = false)
@@ -47,9 +48,9 @@ public class EventLog extends BaseEntity {
     }
     public EventLog() {}
 
-    public EventLog(String actorIdentifier, String actorIp, UserRole actorRole, Action action,
-                    UUID personId, UUID personRole, LocalDateTime timestamp) {
-        this.actorIdentifier = actorIdentifier;
+    public EventLog(UUID actorId, String actorIp, UserRole actorRole, Action action,
+                    UUID personId, UserRole personRole, LocalDateTime timestamp) {
+        this.actorId = actorId;
         this.actorIp = actorIp;
         this.actorRole = actorRole;
         this.action = action;
@@ -59,8 +60,8 @@ public class EventLog extends BaseEntity {
         this.status = ActionStatus.FAILURE;
     }
 
-    public String getActorIdentifier() {
-        return actorIdentifier;
+    public UUID getActorId() {
+        return actorId;
     }
 
     public String getActorIp() {
@@ -77,6 +78,14 @@ public class EventLog extends BaseEntity {
 
     public Action getAction() {
         return action;
+    }
+
+    public UUID getPersonId() {
+        return personId;
+    }
+
+    public UserRole getPersonRole() {
+        return personRole;
     }
 
     public ActionStatus getStatus() {

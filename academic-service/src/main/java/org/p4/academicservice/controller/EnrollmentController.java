@@ -1,10 +1,15 @@
 package org.p4.academicservice.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.p4.academicservice.configuration.security.AuthenticatedUser;
 import org.p4.academicservice.mapper.ResponseMapper;
 import org.p4.academicservice.model.dto.response.EnrollmentDTO;
 import org.p4.academicservice.model.entity.Enrollment;
+import org.p4.academicservice.model.entity.EventLog;
+import org.p4.academicservice.model.entity.enums.Action;
+import org.p4.academicservice.model.entity.enums.UserRole;
 import org.p4.academicservice.service.EnrollmentService;
+import org.p4.academicservice.service.impl.EventLogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,10 +22,12 @@ import java.util.UUID;
 @RequestMapping("/enrollments")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
+    private final EventLogService logService;
     private final ResponseMapper mapper;
 
-    public EnrollmentController(EnrollmentService enrollmentService, ResponseMapper mapper){
+    public EnrollmentController(EnrollmentService enrollmentService, EventLogService logService, ResponseMapper mapper){
         this.enrollmentService = enrollmentService;
+        this.logService = logService;
         this.mapper = mapper;
     }
 
@@ -93,10 +100,13 @@ public class EnrollmentController {
     @PostMapping("/self/{courseId}")
     public ResponseEntity<EnrollmentDTO> addCurrentStudentEnrollment(
             @AuthenticationPrincipal AuthenticatedUser authStudent,
-            @PathVariable UUID courseId
+            @PathVariable UUID courseId,
+            HttpServletRequest request
     ){
+        EventLog log = logService.logEvent(authStudent.id(), request.getRemoteAddr(), authStudent.role(), Action.ADD_ENROLLMENT, authStudent.id(), UserRole.STUDENT);
         Enrollment enrollment = enrollmentService.addNewEnrollment(authStudent.id(), courseId);
         EnrollmentDTO response = mapper.toDto(enrollment);
+        logService.markAsSuccessful(log);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -109,11 +119,15 @@ public class EnrollmentController {
      */
     @PostMapping("/{studentId}/{courseId}")
     public ResponseEntity<EnrollmentDTO> addEnrollment(
+            @AuthenticationPrincipal AuthenticatedUser admin,
             @PathVariable UUID studentId,
-            @PathVariable UUID courseId
+            @PathVariable UUID courseId,
+            HttpServletRequest request
     ){
+        EventLog log = logService.logEvent(admin.id(), request.getRemoteAddr(), admin.role(), Action.ADD_ENROLLMENT, studentId, UserRole.STUDENT);
         Enrollment enrollment = enrollmentService.addNewEnrollment(studentId, courseId);
         EnrollmentDTO response = mapper.toDto(enrollment);
+        logService.markAsSuccessful(log);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -127,9 +141,12 @@ public class EnrollmentController {
     @PatchMapping("/self/{enrollmentId}")
     public ResponseEntity<Void> dropCurrentStudentEnrollment(
             @AuthenticationPrincipal AuthenticatedUser authStudent,
-            @PathVariable UUID enrollmentId
+            @PathVariable UUID enrollmentId,
+            HttpServletRequest request
     ){
+        EventLog log = logService.logEvent(authStudent.id(), request.getRemoteAddr(), authStudent.role(), Action.DROP_ENROLLMENT, authStudent.id(), UserRole.STUDENT);
         enrollmentService.dropEnrollment(authStudent.id(), enrollmentId);
+        logService.markAsSuccessful(log);
         return ResponseEntity.noContent().build();
     }
 
@@ -142,10 +159,14 @@ public class EnrollmentController {
      */
     @PatchMapping("/{studentId}/{enrollmentId}")
     public ResponseEntity<Void> dropEnrollment(
+            @AuthenticationPrincipal AuthenticatedUser admin,
             @PathVariable UUID studentId,
-            @PathVariable UUID enrollmentId
+            @PathVariable UUID enrollmentId,
+            HttpServletRequest request
     ){
+        EventLog log = logService.logEvent(admin.id(), request.getRemoteAddr(), admin.role(), Action.DROP_ENROLLMENT, studentId, UserRole.STUDENT);
         enrollmentService.dropEnrollment(studentId, enrollmentId);
+        logService.markAsSuccessful(log);
         return ResponseEntity.noContent().build();
     }
 
@@ -156,8 +177,14 @@ public class EnrollmentController {
      * @return a {@code ResponseEntity} with no content upon successful deletion
      */
     @DeleteMapping("/{enrollmentId}")
-    public ResponseEntity<Void> deleteEnrollment(@PathVariable UUID enrollmentId){
+    public ResponseEntity<Void> deleteEnrollment(
+            @AuthenticationPrincipal AuthenticatedUser admin,
+            @PathVariable UUID enrollmentId,
+            HttpServletRequest request
+    ){
+        EventLog log = logService.logEvent(admin.id(), request.getRemoteAddr(), admin.role(), Action.DELETE_ENROLLMENT, null, null);
         enrollmentService.deleteEnrollment(enrollmentId);
+        logService.markAsSuccessful(log);
         return ResponseEntity.noContent().build();
     }
 }
